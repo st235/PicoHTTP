@@ -14,7 +14,7 @@ namespace __http_internal {
 class TcpServer {
 public:
     typedef void(*OnConnectedCallback)(uint32_t connection_id);
-    typedef bool(*OnDataReceivedCallback)(uint32_t connection_id, char* data, uint16_t size);
+    typedef bool(*OnDataReceivedCallback)(uint32_t connection_id, uint8_t* data, uint16_t size);
     typedef void(*OnClosedCallback)(uint32_t connection_id);
 
     TcpServer(uint8_t max_connections):
@@ -37,7 +37,7 @@ public:
     TcpConnection* createConnection(tcp_pcb* pcb);
 
     void onConnected(TcpConnection* connection);
-    bool onDataReceived(TcpConnection* connection, char* data, uint16_t size);
+    bool onDataReceived(TcpConnection* connection, uint8_t* data, uint16_t size);
     void onClose(TcpConnection* connection);
 
     bool listen(uint16_t port);
@@ -46,6 +46,8 @@ public:
 private:
     TcpServer(const TcpServer& that) = delete;
     TcpServer& operator=(const TcpServer& that) = delete;
+
+    // TODO: add destructor to clear resources and stop listeners.
 
     inline TcpConnection* findConnectionById(uint32_t connection_id) const {
         if (_connections.find(connection_id) == _connections.end()) {

@@ -205,7 +205,7 @@ void TcpServer::onConnected(TcpConnection* connection) {
     }
 }
 
-bool TcpServer::onDataReceived(TcpConnection* connection, char* data, uint16_t size) {
+bool TcpServer::onDataReceived(TcpConnection* connection, uint8_t* data, uint16_t size) {
     if (_onDataReceivedCallback == nullptr) {
         return false;
     }

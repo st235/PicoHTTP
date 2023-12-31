@@ -8,7 +8,7 @@
 namespace __http_internal {
 
 bool TcpConnection::sink(pbuf* pbuf) {
-    char* result = new char[pbuf->tot_len];
+    uint8_t* result = new uint8_t[pbuf->tot_len];
     for (uint16_t i = 0; i < pbuf->tot_len; i++) {
         result[i] = pbuf_get_at(pbuf, i);
     }
