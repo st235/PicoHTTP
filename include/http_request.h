@@ -85,7 +85,7 @@ public:
                 << "headers=" << _headers.toString() << ", " << std::endl
                 << "query_parameters=" << ConvertMapToString(_query_parameters) << ", " << std::endl
                 << "body=" << _body << std::endl
-                << " }";
+                << "}";
 
         return sstream.str();
     }

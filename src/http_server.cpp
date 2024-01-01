@@ -21,6 +21,8 @@ void RunTest() {
         std::string payload(data, data + length);
         delete[] data;
 
+        printf("[TCP Server Callback] Raw request: %s\n", payload.c_str());
+
         __http_internal::Http11Parser http_parser;
         const auto& http_request = http_parser.fromRequest(payload);
 

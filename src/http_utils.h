@@ -72,7 +72,7 @@ std::unordered_map<std::string, std::string> ParseQueryParameters(const std::str
     }
 
     std::unordered_map<std::string, std::string> result;
-    std::string query_params = path.substr(delimiter_position, path.length() - delimiter_position - 1);
+    std::string query_params = path.substr(delimiter_position + 1, path.length() - delimiter_position - 1);
     std::vector<std::string> query_splits = Split(query_params, /* delimiter= */ "&");
 
     for (const auto& query: query_splits) {
