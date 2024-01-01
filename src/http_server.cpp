@@ -6,11 +6,12 @@
 #include <string>
 
 #include "tcp_server.h"
+#include "http1_1_parser.h"
 
 namespace http {
 
 void RunTest() {
-    auto tcp_server = std::make_unique<__http_internal::TcpServer>(1);
+    auto tcp_server = std::make_unique<__http_internal::TcpServer>(2);
 
     tcp_server->setOnConnectedCallback([](uint32_t connection_id) {
         printf("[TCP Server Callback] Connected: %d\n", connection_id);
@@ -18,7 +19,12 @@ void RunTest() {
 
     tcp_server->setOnDataReceivedCallback([](uint32_t connection_id, uint8_t* data, uint16_t length) {
         std::string payload(data, data + length);
-        printf("[TCP Server Callback] Connection id (%d), received data (of length %d): %s\n", connection_id, length, payload.c_str());
+        delete[] data;
+
+        __http_internal::Http11Parser http_parser;
+        const auto& http_request = http_parser.fromRequest(payload);
+
+        printf("[TCP Server Callback] Http request: %s\n", http_request.toString().c_str());
         return true;
     });
 

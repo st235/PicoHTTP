@@ -1,5 +1,5 @@
-#ifndef HTTP_SERVER
-#define HTTP_SERVER
+#ifndef __HTTP_SERVER_H__
+#define __HTTP_SERVER_H__
 
 #include <cstdint>
 
@@ -9,4 +9,4 @@ void RunTest();
 
 }
 
-#endif // HTTP_SERVER
+#endif // __HTTP_SERVER_H__

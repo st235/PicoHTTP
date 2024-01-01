@@ -10,7 +10,12 @@ pico_sdk_init()
 
 add_library(pico_http
   src/http_server.cpp
+  src/http_utils.h
+  src/http_version.h
+  src/http1_1_parser.h
+  src/http1_1_parser.cpp
   src/log.h
+  src/string_utils.h
   src/tcp_server.h
   src/tcp_server.cpp
   src/tcp_connection.h
