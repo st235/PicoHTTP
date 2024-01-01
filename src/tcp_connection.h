@@ -14,6 +14,7 @@ class TcpConnection {
 public:
     TcpConnection(TcpServer& server,
                   tcp_pcb* pcb):
+        _is_closed(false),
         _server(server),
         _pcb(pcb) {
         // Empty on purpose.
@@ -28,7 +29,7 @@ public:
     bool sink(pbuf* pbuf);
     bool write(const void* data, uint16_t size) const;
     bool flush() const;
-    bool close();
+    void close();
 
 private:
     TcpConnection(const TcpConnection& that) = delete;

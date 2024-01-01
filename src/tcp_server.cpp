@@ -69,13 +69,15 @@ err_t on_receive_data(void* argument,
         tcp_recv(pcb, nullptr);
         tcp_poll(pcb, nullptr, kTcpNoPoll);
         tcp_err(pcb, nullptr);
+        // Mark connection as closed and
+        // synchronise the connection state.
+        connection->close();
 
-        if (!connection->close()) {
+        if (tcp_close(pcb) != ERR_OK) {
+            PLOGD("Connection closed with an error, aboring with tcp_abort.");
             tcp_abort(pcb);
+            return ERR_ABRT;
         }
-
-        // The connection is marked as closed anyway.
-        return ERR_ABRT;
     }
 
     return ERR_OK;
@@ -90,6 +92,27 @@ static err_t on_poll(void* argument,
     if (!connection) {
         PLOGD("Argument was null");
         if (pcb) {
+            PLOGD("Aborting as pcb is available.");
+            tcp_abort(pcb);
+        }
+        // Aborting the connection anyway,
+        // even if pcb is null.
+        return ERR_ABRT;
+    }
+
+    // Connection has been marked as closed
+    // from the client clode.
+    if (connection->isClosed()) {
+        if (pcb) {
+            PLOGD("Closing stale connection.");
+            tcp_arg(pcb, nullptr);
+            tcp_recv(pcb, nullptr);
+            tcp_poll(pcb, nullptr, kTcpNoPoll);
+            tcp_err(pcb, nullptr);
+
+            // Triggering the callback.
+            connection->close();
+
             tcp_abort(pcb);
         }
         return ERR_ABRT;
@@ -107,8 +130,9 @@ static void on_error(void* argument,
     }
 
     auto* connection = static_cast<__http_internal::TcpConnection*>(argument);
-    if (connection != nullptr) {
-        // TODO: close connection.
+    if (connection) {
+        PLOGD("Closing connection from on_error.");
+        connection->close();
     }
 }
 
