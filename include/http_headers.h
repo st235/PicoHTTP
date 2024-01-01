@@ -4,6 +4,7 @@
 #include <string>
 #include <sstream>
 #include <unordered_map>
+#include <vector>
 
 namespace http {
 
@@ -36,6 +37,15 @@ public:
         return *this;
     }
 
+    std::vector<std::string> keys() const {
+        std::vector<std::string> keys;
+        keys.reserve(_headers.size());
+        for (auto kv_pair: _headers) {
+            keys.push_back(kv_pair.first);
+        }
+        return keys;
+    }
+
     inline bool contains(const std::string& key) const {
         return _headers.find(key) != _headers.end();
     }
@@ -57,8 +67,12 @@ public:
         return get(key);
     }
 
-    const std::string& operator[](const std::string& key) { 
-        return _headers.at(key);
+    std::string& operator[](const std::string& key) { 
+        return _headers[key];
+    }
+
+    size_t size() const {
+        return _headers.size();
     }
 
     std::string toString() const {

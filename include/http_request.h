@@ -47,6 +47,8 @@ public:
         // Empty on purpose.
     }
 
+    // TODO: add copy and move constructors.
+
     std::string getHttpVersion() const {
         return _http_version;
     }

@@ -202,6 +202,16 @@ bool TcpServer::listen(uint16_t port) {
     return _listen_pcb != nullptr;
 }
 
+bool TcpServer::write(uint32_t connection_id, const void* data, uint16_t size) const {
+    auto* connection = findConnectionById(connection_id);
+    return connection->write(data, size);
+}
+
+void TcpServer::close(uint32_t connection_id) const {
+    auto* connection = findConnectionById(connection_id);
+    connection->close();
+}
+
 TcpConnection* TcpServer::createConnection(tcp_pcb* pcb) {
     if (_connections.size() >= _max_connections) {
         PLOGD("Connection was aborted, as the amount of open connections is at its limit.");

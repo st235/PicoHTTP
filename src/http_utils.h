@@ -5,6 +5,7 @@
 #include <unordered_map>
 
 #include "http_method.h"
+#include "http_status_code.h"
 #include "string_utils.h"
 
 namespace {
@@ -51,6 +52,18 @@ http::HttpMethod ConvertStringToHttpMethod(const std::string& method) {
     } else {
         // TODO: return some unknown type.
         return http::HttpMethod::GET;
+    }
+}
+
+std::string GetHttpStatusCodeDescription(const http::HttpStatusCode& status_code) {
+    switch(status_code) {
+        case http::HttpStatusCode::OK: return std::string("200 OK");
+        case http::HttpStatusCode::BAD_REQUEST: return std::string("400 Bad Request");
+        case http::HttpStatusCode::UNAUTHORIZED: return std::string("401 Unauthorized");
+        case http::HttpStatusCode::FORBIDDEN: return std::string("403 Forbidden");
+        case http::HttpStatusCode::NOT_FOUND: return std::string("404 Not Found");
+        case http::HttpStatusCode::INTERNAL_SERVER_ERROR: return std::string("500 Internal Server Error");
+        default: return std::string("418 I'm a teapot");
     }
 }
 

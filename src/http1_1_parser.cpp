@@ -4,6 +4,7 @@
 #include <vector>
 #include <unordered_map>
 
+#include "http_version.h"
 #include "http_method.h"
 #include "http_headers.h"
 #include "http_utils.h"
@@ -12,7 +13,9 @@
 namespace {
 
 constexpr char kNewLine = '\n';
+
 constexpr char kHttpNewLine[] = "\r\n";
+constexpr char kHttpWordsDelimiter = ' ';
 
 } // namespace
 
@@ -57,6 +60,26 @@ http::HttpRequest Http11Parser::fromRequest(const std::string& request) const {
     }
 
     return http::HttpRequest(http_version, route, http_method, headers, query_parameters, Trim(body.str()));
+}
+
+std::string Http11Parser::toResponse(const http::HttpResponse& response) const {
+    std::stringstream sstream;
+
+    // Main line: HTTP/1.1 403 Forbidden
+    sstream << kHttp11Version << kHttpWordsDelimiter 
+            << GetHttpStatusCodeDescription(response.getStatusCode()) << kHttpNewLine;
+
+    const auto& headers = response.getHeaders();
+
+    for (const auto& header_key: headers.keys()) {
+        sstream << header_key << ':' << headers[header_key] << kHttpNewLine;
+    }
+
+    // New line to separate body.
+    sstream << kHttpNewLine;
+
+    sstream << response.getBody() << kHttpNewLine;
+    return sstream.str();
 }
 
 } // namespace __http_internal

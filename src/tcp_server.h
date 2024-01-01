@@ -3,6 +3,7 @@
 
 #include <cstdint>
 #include <memory>
+#include <functional>
 #include <unordered_map>
 
 #include "tcp_connection.h"
@@ -13,9 +14,9 @@ namespace __http_internal {
 
 class TcpServer {
 public:
-    typedef void(*OnConnectedCallback)(uint32_t connection_id);
-    typedef bool(*OnDataReceivedCallback)(uint32_t connection_id, uint8_t* data, uint16_t size);
-    typedef void(*OnClosedCallback)(uint32_t connection_id);
+    typedef std::function<void(uint32_t connection_id)> OnConnectedCallback;
+    typedef std::function<bool(uint32_t connection_id, uint8_t* data, uint16_t size)> OnDataReceivedCallback;
+    typedef std::function<void(uint32_t connection_id)> OnClosedCallback;
 
     TcpServer(uint8_t max_connections):
         _max_connections(max_connections) {
@@ -39,6 +40,9 @@ public:
     void onConnected(TcpConnection* connection);
     bool onDataReceived(TcpConnection* connection, uint8_t* data, uint16_t size);
     void onClose(TcpConnection* connection);
+
+    bool write(uint32_t connection_id, const void* data, uint16_t size) const;
+    void close(uint32_t connection_id) const;
 
     bool listen(uint16_t port);
     bool stop();
