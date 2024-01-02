@@ -8,7 +8,7 @@
 namespace {
 
 constexpr uint8_t kTcpNoPoll = 0;
-constexpr uint8_t kTcpPollInterval = 10;
+constexpr uint8_t kTcpPollInterval = 5;
 
 tcp_pcb* create_listen_pcb(uint16_t port, 
                            void* argument) {
@@ -69,15 +69,19 @@ err_t on_receive_data(void* argument,
         tcp_recv(pcb, nullptr);
         tcp_poll(pcb, nullptr, kTcpNoPoll);
         tcp_err(pcb, nullptr);
-        // Mark connection as closed and
-        // synchronise the connection state.
-        connection->close();
+        // Mark connection as closed.
+        connection->markAsClosed();
 
         if (tcp_close(pcb) != ERR_OK) {
             PLOGD("Connection closed with an error, aboring with tcp_abort.");
             tcp_abort(pcb);
             return ERR_ABRT;
         }
+
+        // Synchronise the connection state
+        // with possible observers.
+        auto& server = connection->getServer();
+        server.onConnectionClosed(connection);
     }
 
     return ERR_OK;
@@ -94,28 +98,28 @@ static err_t on_poll(void* argument,
         if (pcb) {
             PLOGD("Aborting as pcb is available.");
             tcp_abort(pcb);
+            return ERR_ABRT;
         }
-        // Aborting the connection anyway,
-        // even if pcb is null.
-        return ERR_ABRT;
     }
 
     // Connection has been marked as closed
     // from the client clode.
-    if (connection->isClosed()) {
-        if (pcb) {
-            PLOGD("Closing stale connection.");
-            tcp_arg(pcb, nullptr);
-            tcp_recv(pcb, nullptr);
-            tcp_poll(pcb, nullptr, kTcpNoPoll);
-            tcp_err(pcb, nullptr);
+    if (connection->isClosed() && pcb) {
+        PLOGD("Closing stale connection.");
+        tcp_arg(pcb, nullptr);
+        tcp_recv(pcb, nullptr);
+        tcp_poll(pcb, nullptr, kTcpNoPoll);
+        tcp_err(pcb, nullptr);
 
-            // Triggering the callback.
-            connection->close();
-
+        if (tcp_close(pcb) != ERR_OK) {
+            PLOGD("Connection closed with an error, aboring with tcp_abort.");
             tcp_abort(pcb);
+            return ERR_ABRT;
         }
-        return ERR_ABRT;
+
+        // Triggering the callback.
+        auto& server = connection->getServer();
+        server.onConnectionClosed(connection);
     }
 
     return ERR_OK;
@@ -131,8 +135,10 @@ static void on_error(void* argument,
 
     auto* connection = static_cast<__http_internal::TcpConnection*>(argument);
     if (connection) {
-        PLOGD("Closing connection from on_error.");
-        connection->close();
+        PLOGD("Marking connection as closed, from on_error.");
+        connection->markAsClosed();
+        auto& server = connection->getServer();
+        server.onConnectionClosed(connection);
     }
 }
 
@@ -191,11 +197,11 @@ bool TcpServer::listen(uint16_t port) {
 
     cyw43_thread_enter();
 
-  _listen_pcb = create_listen_pcb(port, this);
-  if (_listen_pcb != nullptr) {
-    PLOGD("Listening connection established.");
-    tcp_accept(_listen_pcb, on_accept_connection);
-  }
+    _listen_pcb = create_listen_pcb(port, this);
+    if (_listen_pcb != nullptr) {
+        PLOGD("Listening connection established.");
+        tcp_accept(_listen_pcb, on_accept_connection);
+    }
 
     cyw43_thread_exit();
 
@@ -209,7 +215,7 @@ bool TcpServer::write(uint32_t connection_id, const void* data, uint16_t size) c
 
 void TcpServer::close(uint32_t connection_id) const {
     auto* connection = findConnectionById(connection_id);
-    connection->close();
+    connection->markAsClosed();
 }
 
 TcpConnection* TcpServer::createConnection(tcp_pcb* pcb) {
@@ -252,7 +258,7 @@ bool TcpServer::onDataReceived(TcpConnection* connection, uint8_t* data, uint16_
     return _onDataReceivedCallback(connection->id(), data, size);
 }
 
-void TcpServer::onClose(TcpConnection* connection) {
+void TcpServer::onConnectionClosed(TcpConnection* connection) {
     if (!connection) {
         PLOGD("Trying to close empty connection.");
         return;

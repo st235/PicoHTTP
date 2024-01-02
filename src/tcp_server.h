@@ -39,7 +39,7 @@ public:
 
     void onConnected(TcpConnection* connection);
     bool onDataReceived(TcpConnection* connection, uint8_t* data, uint16_t size);
-    void onClose(TcpConnection* connection);
+    void onConnectionClosed(TcpConnection* connection);
 
     bool write(uint32_t connection_id, const void* data, uint16_t size) const;
     void close(uint32_t connection_id) const;

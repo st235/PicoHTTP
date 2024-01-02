@@ -24,12 +24,16 @@ public:
         return reinterpret_cast<uint32_t>(this);
     }
 
+    inline tcp_pcb* getPcb() { return _pcb; }
+    inline TcpServer& getServer() { return _server; }
+
     inline bool isClosed() const { return _is_closed; }
+    inline void markAsClosed() { _is_closed = true; }
 
     bool sink(pbuf* pbuf);
     bool write(const void* data, uint16_t size) const;
+
     bool flush() const;
-    void close();
 
 private:
     TcpConnection(const TcpConnection& that) = delete;

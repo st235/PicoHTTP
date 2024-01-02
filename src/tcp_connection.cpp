@@ -43,9 +43,4 @@ bool TcpConnection::flush() const {
     return tcp_output(_pcb) == ERR_OK;
 }
 
-void TcpConnection::close() {
-    _is_closed = true;
-    _server.onClose(this);
-}
-
 } // namespace __http_internal
