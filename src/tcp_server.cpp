@@ -72,16 +72,16 @@ err_t on_receive_data(void* argument,
         // Mark connection as closed.
         connection->markAsClosed();
 
+        // Synchronise the connection state
+        // with possible observers.
+        auto& server = connection->getServer();
+        server.onConnectionClosed(connection);
+
         if (tcp_close(pcb) != ERR_OK) {
             PLOGD("Connection closed with an error, aboring with tcp_abort.");
             tcp_abort(pcb);
             return ERR_ABRT;
         }
-
-        // Synchronise the connection state
-        // with possible observers.
-        auto& server = connection->getServer();
-        server.onConnectionClosed(connection);
     }
 
     return ERR_OK;
@@ -111,15 +111,15 @@ static err_t on_poll(void* argument,
         tcp_poll(pcb, nullptr, kTcpNoPoll);
         tcp_err(pcb, nullptr);
 
+        // Triggering the callback.
+        auto& server = connection->getServer();
+        server.onConnectionClosed(connection);
+
         if (tcp_close(pcb) != ERR_OK) {
             PLOGD("Connection closed with an error, aboring with tcp_abort.");
             tcp_abort(pcb);
             return ERR_ABRT;
         }
-
-        // Triggering the callback.
-        auto& server = connection->getServer();
-        server.onConnectionClosed(connection);
     }
 
     return ERR_OK;
