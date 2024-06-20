@@ -16,7 +16,16 @@ Alternatively there is a cask for Apple Sillicon if the previous one does not wo
 brew install --cask gcc-arm-embedded
 ```
 
-## Build
+## Building example
+
+```bash
+cd example
+mkdir out
+cd out
+cmake .. -DWIFI_SSID=wifi -DWIFI_PASSWORD=password
+```
+
+## Building library
 
 Initialise all submodules
 
