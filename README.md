@@ -46,3 +46,13 @@ Build the project
 cmake ..
 make
 ```
+
+## Debugging via logs
+
+```
+brew install minicom
+```
+
+```
+minicom -b 115200 -o -D /dev/tty.usbmodem11301
+```

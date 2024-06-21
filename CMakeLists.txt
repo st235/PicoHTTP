@@ -16,9 +16,7 @@ add_library(pico_http
   src/http1_1_parser.cpp
   src/log.h
   src/string_utils.h
-  src/tcp_server.h
   src/tcp_server.cpp
-  src/tcp_connection.h
   src/tcp_connection.cpp
 )
 

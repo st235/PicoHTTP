@@ -13,7 +13,7 @@ int main() {
         return -1;
     }
 
-    printf("WIFI_SSID %s WIFI_PASSWORD %s", WIFI_SSID, WIFI_PASSWORD);
+    printf("WIFI_SSID %s WIFI_PASSWORD %s\n", WIFI_SSID, WIFI_PASSWORD);
 
     cyw43_arch_enable_sta_mode();
 
@@ -25,9 +25,16 @@ int main() {
         printf("Connected.\n");
     }
 
-    http::RunTest();
+    http::HttpServer server(3036);
+
+    server.onGet("/", [](const auto& request, const auto& response) {
+        printf("Hello World!");
+    });
+
+    server.start();
+    
     while (true) {
-        printf("Hello World.\n");
+        printf("WIFI_SSID %s WIFI_PASSWORD %s\n", WIFI_SSID, WIFI_PASSWORD);
         sleep_ms(1000);
     }
 }

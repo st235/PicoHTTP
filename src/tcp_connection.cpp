@@ -8,11 +8,17 @@
 namespace __http_internal {
 
 bool TcpConnection::sink(pbuf* pbuf) {
-    uint8_t* result = new uint8_t[pbuf->tot_len];
+    uint8_t* data = new uint8_t[pbuf->tot_len];
     for (uint16_t i = 0; i < pbuf->tot_len; i++) {
-        result[i] = pbuf_get_at(pbuf, i);
+        data[i] = pbuf_get_at(pbuf, i);
     }
-    return _server.onDataReceived(this, result, pbuf->tot_len);
+
+    auto sink_status = _server.onDataReceived(this, data, pbuf->tot_len);
+
+    // Delete data allocated in heap.
+    delete[] data;
+
+    return sink_status;
 }
 
 bool TcpConnection::write(const void* data, uint16_t size) const {

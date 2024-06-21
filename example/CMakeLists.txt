@@ -12,7 +12,7 @@ pico_sdk_init()
 
 if((NOT WIFI_SSID) OR (NOT WIFI_PASSWORD))
     message(FATAL_ERROR "WIFI_SSID or WIFI_PASSWORD are not set")
-endif(NOT WIFI_SSID OR NOT WIFI_PASSWORD)
+endif((NOT WIFI_SSID) OR (NOT WIFI_PASSWORD))
 
 add_executable(example
     picow_http_example.cpp

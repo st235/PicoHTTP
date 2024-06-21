@@ -47,6 +47,8 @@ public:
     bool listen(uint16_t port);
     bool stop();
 
+    ~TcpServer() = default;
+
 private:
     TcpServer(const TcpServer& that) = delete;
     TcpServer& operator=(const TcpServer& that) = delete;

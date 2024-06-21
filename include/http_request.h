@@ -65,11 +65,11 @@ public:
         return _headers;
     }
 
-    bool containsQueryParameter(const std::string& key) const {
+    bool hasQuery(const std::string& key) const {
         return _query_parameters.find(key) != _query_parameters.end();
     }
 
-    std::string getQueryParameter(const std::string& key) const {
+    std::string getQuery(const std::string& key) const {
         return _query_parameters.at(key);
     }
 

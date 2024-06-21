@@ -98,8 +98,8 @@ static err_t on_poll(void* argument,
         if (pcb) {
             PLOGD("Aborting as pcb is available.");
             tcp_abort(pcb);
-            return ERR_ABRT;
         }
+        return ERR_ABRT;
     }
 
     // Connection has been marked as closed
