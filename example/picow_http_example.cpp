@@ -28,10 +28,18 @@ int main() {
     http::HttpServer server(3036);
 
     server.onGet("/", [](const auto& request, auto& response) {
-        printf("Hello World!");
-
         response.addHeader("Content-Type", "text/html; charset=utf-8");
         response.send("Hello World");
+    });
+
+    server.onGet("/ping", [](const auto& request, auto& response) {
+        response.addHeader("Content-Type", "text/html; charset=utf-8");
+        response.send("pong");
+    });
+
+    server.onPost("/ping", [](const auto& request, auto& response) {
+        response.addHeader("Content-Type", "text/html; charset=utf-8");
+        response.send("post pong");
     });
 
     server.onGet("/echo", [](const auto& request, auto& response) {
@@ -47,7 +55,7 @@ int main() {
     server.start();
     
     while (true) {
-        printf("Sleeping...");
+        printf("Sleeping...\n");
         sleep_ms(1000);
     }
 }
