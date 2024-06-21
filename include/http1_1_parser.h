@@ -3,15 +3,19 @@
 
 #include <string>
 
-#include "http_request.h"
-#include "http_response.h"
+namespace http {
+
+class HttpRequest;
+class HttpResponse;
+
+} // namespace http
 
 namespace __http_internal {
 
 class Http11Parser {
 public:
     http::HttpRequest fromRequest(const std::string& request) const;
-    std::string toResponse(const http::HttpResponse& response) const;
+    std::string toResponse(const http::HttpResponse& response, const std::string& body) const;
 };
 
 } // namespace __http_internal

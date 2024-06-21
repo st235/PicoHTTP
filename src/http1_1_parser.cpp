@@ -7,6 +7,8 @@
 #include "http_version.h"
 #include "http_method.h"
 #include "http_headers.h"
+#include "http_request.h"
+#include "http_response.h"
 #include "http_utils.h"
 #include "string_utils.h"
 
@@ -62,7 +64,7 @@ http::HttpRequest Http11Parser::fromRequest(const std::string& request) const {
     return http::HttpRequest(http_version, route, http_method, headers, query_parameters, Trim(body.str()));
 }
 
-std::string Http11Parser::toResponse(const http::HttpResponse& response) const {
+std::string Http11Parser::toResponse(const http::HttpResponse& response, const std::string& body) const {
     std::stringstream sstream;
 
     // Main line: HTTP/1.1 403 Forbidden
@@ -78,7 +80,7 @@ std::string Http11Parser::toResponse(const http::HttpResponse& response) const {
     // New line to separate body.
     sstream << kHttpNewLine;
 
-    sstream << response.getBody() << kHttpNewLine;
+    sstream << body << kHttpNewLine;
     return sstream.str();
 }
 

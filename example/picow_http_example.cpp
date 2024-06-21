@@ -27,14 +27,27 @@ int main() {
 
     http::HttpServer server(3036);
 
-    server.onGet("/", [](const auto& request, const auto& response) {
+    server.onGet("/", [](const auto& request, auto& response) {
         printf("Hello World!");
+
+        response.addHeader("Content-Type", "text/html; charset=utf-8");
+        response.send("Hello World");
+    });
+
+    server.onGet("/echo", [](const auto& request, auto& response) {
+        response.addHeader("Content-Type", "text/html; charset=utf-8");
+
+        if (request.hasQuery("q")) {
+            response.send(request.getQuery("q"));
+        } else {
+            response.send("q is empty");
+        }
     });
 
     server.start();
     
     while (true) {
-        printf("WIFI_SSID %s WIFI_PASSWORD %s\n", WIFI_SSID, WIFI_PASSWORD);
+        printf("Sleeping...");
         sleep_ms(1000);
     }
 }

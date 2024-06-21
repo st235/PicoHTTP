@@ -63,20 +63,13 @@ void HttpServer::start() {
 
         const auto* callback = this->findRouteCallback(http_request.getMethod(), http_request.getPath());
 
-        std::string body = "Hello world!";
+        HttpResponse response(connection_id, tcp_server, http_parser);
 
-        HttpHeaders headers;
-        headers["Content-Type"] = std::string("text/html; charset=utf-8");
-
-        HttpResponse response(HttpStatusCode::OK, headers, body);
-
-        std::string raw_response = http_parser.toResponse(response);
-
-        (*callback)(http_request, response);
-
-        const char* cresponse = raw_response.c_str();
-        tcp_server->write(connection_id, cresponse, strlen(cresponse));
-        tcp_server->close(connection_id);
+        if (!callback) {
+            response.send("");
+        } else {
+            (*callback)(http_request, response);
+        }
 
         return true;
     });
