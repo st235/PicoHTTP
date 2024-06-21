@@ -70,7 +70,7 @@ err_t on_receive_data(void* argument,
         tcp_poll(pcb, nullptr, kTcpNoPoll);
         tcp_err(pcb, nullptr);
         // Mark connection as closed.
-        connection->markAsClosed();
+        connection->close();
 
         // Synchronise the connection state
         // with possible observers.
@@ -87,8 +87,8 @@ err_t on_receive_data(void* argument,
     return ERR_OK;
 }
 
-static err_t on_poll(void* argument, 
-                     tcp_pcb* pcb) {
+err_t on_poll(void* argument, 
+              tcp_pcb* pcb) {
     cyw43_arch_lwip_check();
 
     auto* connection = static_cast<__http_internal::TcpConnection*>(argument);
@@ -98,17 +98,18 @@ static err_t on_poll(void* argument,
         if (pcb) {
             PLOGD("Aborting as pcb is available.");
             tcp_abort(pcb);
+            return ERR_ABRT;
         }
-        return ERR_ABRT;
     }
 
     // Connection has been marked as closed
     // from the client clode.
-    if (connection->isClosed() && pcb) {
+    if (connection->isClosing() && pcb) {
         PLOGD("Closing stale connection.");
         tcp_arg(pcb, nullptr);
         tcp_recv(pcb, nullptr);
         tcp_poll(pcb, nullptr, kTcpNoPoll);
+        tcp_sent(pcb, nullptr);
         tcp_err(pcb, nullptr);
 
         // Triggering the callback.
@@ -125,8 +126,48 @@ static err_t on_poll(void* argument,
     return ERR_OK;
 }
 
-static void on_error(void* argument,
-                     err_t error) {
+err_t on_sent(void* argument,
+             tcp_pcb* pcb,
+             u16_t len) {
+    cyw43_arch_lwip_check();
+
+    auto* connection = static_cast<__http_internal::TcpConnection*>(argument);
+
+    if (!connection) {
+        PLOGD("Argument was null");
+        if (pcb) {
+            PLOGD("Aborting as pcb is available.");
+            tcp_abort(pcb);
+            return ERR_ABRT;
+        }
+    }
+
+    // Connection has been marked as closed
+    // from the client clode.
+    if (connection->isClosing() && pcb) {
+        PLOGD("Closing stale connection.");
+        tcp_arg(pcb, nullptr);
+        tcp_recv(pcb, nullptr);
+        tcp_poll(pcb, nullptr, kTcpNoPoll);
+        tcp_sent(pcb, nullptr);
+        tcp_err(pcb, nullptr);
+
+        // Triggering the callback.
+        auto& server = connection->getServer();
+        server.onConnectionClosed(connection);
+
+        if (tcp_close(pcb) != ERR_OK) {
+            PLOGD("Connection closed with an error, aboring with tcp_abort.");
+            tcp_abort(pcb);
+            return ERR_ABRT;
+        }
+    }
+
+    return ERR_OK;
+}
+
+void on_error(void* argument,
+              err_t error) {
     cyw43_arch_lwip_check();
 
     if (error != ERR_ABRT) {
@@ -136,7 +177,7 @@ static void on_error(void* argument,
     auto* connection = static_cast<__http_internal::TcpConnection*>(argument);
     if (connection) {
         PLOGD("Marking connection as closed, from on_error.");
-        connection->markAsClosed();
+        connection->close();
         auto& server = connection->getServer();
         server.onConnectionClosed(connection);
     }
@@ -178,6 +219,7 @@ err_t on_accept_connection(void* argument,
 
     tcp_recv(new_pcb, on_receive_data);
     tcp_poll(new_pcb, on_poll, kTcpPollInterval);
+    tcp_sent(new_pcb, on_sent);
     tcp_err(new_pcb, on_error);
 
     PLOGD("Incoming connection has been sucessfully accepted.");
@@ -210,12 +252,16 @@ bool TcpServer::listen(uint16_t port) {
 
 bool TcpServer::write(uint32_t connection_id, const void* data, uint16_t size) const {
     auto* connection = findConnectionById(connection_id);
-    return connection->write(data, size);
+    if (connection->write(data, size)) {
+        return connection->flush();
+    } else {
+        return false;
+    }
 }
 
 void TcpServer::close(uint32_t connection_id) const {
     auto* connection = findConnectionById(connection_id);
-    connection->markAsClosed();
+    connection->close();
 }
 
 TcpConnection* TcpServer::createConnection(tcp_pcb* pcb) {

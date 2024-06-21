@@ -22,7 +22,7 @@ bool TcpConnection::sink(pbuf* pbuf) {
 }
 
 bool TcpConnection::write(const void* data, uint16_t size) const {
-    if (_is_closed) {
+    if (_is_closing) {
         PLOGD("Accessing closed connection.");
         return false;
     }
@@ -41,7 +41,7 @@ bool TcpConnection::write(const void* data, uint16_t size) const {
 }
 
 bool TcpConnection::flush() const {
-    if (_is_closed) {
+    if (_is_closing) {
         PLOGD("Accessing closed connection.");
         return false;
     }

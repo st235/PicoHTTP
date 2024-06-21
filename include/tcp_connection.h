@@ -14,7 +14,7 @@ class TcpConnection {
 public:
     TcpConnection(TcpServer& server,
                   tcp_pcb* pcb):
-        _is_closed(false),
+        _is_closing(false),
         _server(server),
         _pcb(pcb) {
         // Empty on purpose.
@@ -27,8 +27,8 @@ public:
     inline tcp_pcb* getPcb() { return _pcb; }
     inline TcpServer& getServer() { return _server; }
 
-    inline bool isClosed() const { return _is_closed; }
-    inline void markAsClosed() { _is_closed = true; }
+    inline bool isClosing() const { return _is_closing; }
+    inline void close() { _is_closing = true; }
 
     bool sink(pbuf* pbuf);
     bool write(const void* data, uint16_t size) const;
@@ -42,7 +42,7 @@ private:
     tcp_pcb* _pcb;
     TcpServer& _server;
 
-    bool _is_closed;
+    bool _is_closing;
 };
 
 } // namespace __http_internal
