@@ -13,9 +13,7 @@ public:
     HttpHeaders() = default;
 
     HttpHeaders(const HttpHeaders& that): _headers() {
-        if (this != &that) {
-            this->_headers = that._headers;
-        }
+        this->_headers = that._headers;
     }
 
     HttpHeaders& operator=(const HttpHeaders& that) {
@@ -40,35 +38,22 @@ public:
     std::vector<std::string> keys() const {
         std::vector<std::string> keys;
         keys.reserve(_headers.size());
-        for (auto kv_pair: _headers) {
-            keys.push_back(kv_pair.first);
+        for (const auto& [key, _]: _headers) {
+            keys.push_back(key);
         }
         return keys;
     }
 
-    inline bool contains(const std::string& key) const {
-        return _headers.find(key) != _headers.end();
+    std::string& operator[](const std::string& key) { 
+        return _headers[key];
     }
 
-    bool put(const std::string& key, const std::string& value) {
-        if (contains(key)) {
-            return false;
-        }
-
-        _headers[key] = value;
-        return true;
-    }
-
-    inline std::string get(const std::string& key) const {
+    const std::string& operator[](const std::string& key) const { 
         return _headers.at(key);
     }
 
-    std::string operator[](const std::string& key) const { 
-        return get(key);
-    }
-
-    std::string& operator[](const std::string& key) { 
-        return _headers[key];
+    inline bool contains(const std::string& key) const {
+        return _headers.find(key) != _headers.end();
     }
 
     size_t size() const {

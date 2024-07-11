@@ -49,7 +49,7 @@ http::HttpRequest Http11Parser::fromRequest(const std::string& request) const {
         std::string key;
         std::string value;
         if (ParseSingleHeaderLine(header_candidate, key, value)) {
-            headers.put(key, value);
+            headers[key] = value;
         }
 
         headers_line++;
