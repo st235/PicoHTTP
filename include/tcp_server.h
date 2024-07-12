@@ -12,13 +12,13 @@ struct tcp_pcb;
 
 namespace tcp {
 
-class TcpServer {
+class Server {
 public:
     typedef std::function<void(uint32_t connection_id)> OnConnectedCallback;
     typedef std::function<bool(uint32_t connection_id, uint8_t* data, uint16_t size)> OnDataReceivedCallback;
     typedef std::function<void(uint32_t connection_id)> OnClosedCallback;
 
-    TcpServer(uint8_t max_connections):
+    Server(uint8_t max_connections):
         _max_connections(max_connections) {
         // Empty on purpose.
     }
@@ -47,11 +47,11 @@ public:
     bool listen(uint16_t port);
     bool stop();
 
-    ~TcpServer() = default;
+    ~Server() = default;
 
 private:
-    TcpServer(const TcpServer& that) = delete;
-    TcpServer& operator=(const TcpServer& that) = delete;
+    Server(const Server& that) = delete;
+    Server& operator=(const Server& that) = delete;
 
     // TODO: add destructor to clear resources and stop listeners.
 

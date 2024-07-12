@@ -16,7 +16,7 @@ namespace http {
 Server::Server(uint16_t port, uint8_t max_connections):
     _port(port),
     _max_connections(max_connections),
-    _tcp_server(std::make_unique<tcp::TcpServer>(max_connections)),
+    _tcp_server(std::make_unique<tcp::Server>(max_connections)),
     _routes() {
 
     _tcp_server->setOnConnectedCallback([](uint32_t connection_id) {

@@ -8,11 +8,11 @@ struct pbuf;
 
 namespace tcp {
 
-class TcpServer;
+class Server;
 
 class TcpConnection {
 public:
-    TcpConnection(TcpServer& server,
+    TcpConnection(Server& server,
                   tcp_pcb* pcb):
         _is_closing(false),
         _server(server),
@@ -25,7 +25,7 @@ public:
     }
 
     inline tcp_pcb* getPcb() { return _pcb; }
-    inline TcpServer& getServer() { return _server; }
+    inline Server& getServer() { return _server; }
 
     inline bool isClosing() const { return _is_closing; }
     inline void close() { _is_closing = true; }
@@ -40,7 +40,7 @@ private:
     TcpConnection& operator=(const TcpConnection& that) = delete;
 
     tcp_pcb* _pcb;
-    TcpServer& _server;
+    Server& _server;
 
     bool _is_closing;
 };
