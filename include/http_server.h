@@ -25,7 +25,7 @@ class Server {
     typedef std::function<void(const Request& request, Response& response)> OnRouteCallback;
 
     Server(uint16_t port,
-               uint8_t max_connections = kDefaultMaxConnection);
+           uint8_t max_connections = kDefaultMaxConnection);
 
     inline void onGet(const std::string& route,
                       OnRouteCallback callback) {
@@ -51,7 +51,7 @@ class Server {
 
     uint16_t _port;
     uint8_t _max_connections;
-    std::unique_ptr<__internal::TcpServer> _tcp_server;
+    std::unique_ptr<tcp::TcpServer> _tcp_server;
     std::unordered_map<Method, std::unordered_map<std::string, OnRouteCallback>> _routes;
 };
 

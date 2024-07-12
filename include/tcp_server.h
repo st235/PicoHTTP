@@ -10,9 +10,7 @@
 
 struct tcp_pcb;
 
-namespace http {
-
-namespace __internal {
+namespace tcp {
 
 class TcpServer {
 public:
@@ -73,8 +71,6 @@ private:
     OnClosedCallback _onClosedCallback = nullptr;
 };
 
-} // __internal
-
-} // namespace http
+} // namespace tcp
 
 #endif // __TCP_SERVER_H__
