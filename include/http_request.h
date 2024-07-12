@@ -33,11 +33,11 @@ namespace http {
 class Request {
 public:
     Request(const std::string& http_version,
-                const std::string& path,
-                Method method,
-                Headers headers,
-                const std::unordered_map<std::string, std::string>& query_parameters,
-                const std::string& body):
+            const std::string& path,
+            const Method& method,
+            const Headers& headers,
+            const std::unordered_map<std::string, std::string>& query_parameters,
+            const std::string& body):
         _http_version(http_version),
         _path(path),
         _method(method),
@@ -47,21 +47,63 @@ public:
         // Empty on purpose.
     }
 
-    // TODO: add copy and move constructors.
+    Request(const Request& that):
+        _http_version(that._http_version),
+        _path(that._path),
+        _method(that._method),
+        _headers(that._headers),
+        _query_parameters(that._query_parameters),
+        _body(that._body) {
+        // Empty on purpose.
+    }
 
-    std::string getHttpVersion() const {
+    Request& operator=(const Request& that) {
+        if (this != &that) {
+            _http_version = that._http_version;
+            _path = that._path;
+            _method = that._method;
+            _headers = that._headers;
+            _query_parameters = that._query_parameters;
+            _body = that._body;
+        }
+        return *this;
+    }
+
+    Request(Request&& that):
+        _http_version(std::move(that._http_version)),
+        _path(std::move(that._path)),
+        _method(std::move(that._method)),
+        _headers(std::move(that._headers)),
+        _query_parameters(std::move(that._query_parameters)),
+        _body(std::move(that._body)) {
+        // Empty on purpose.
+    }
+
+    Request& operator=(Request&& that) {
+        if (this != &that) {
+            _http_version = std::move(that._http_version);
+            _path = std::move(that._path);
+            _method = std::move(that._method);
+            _headers = std::move(that._headers);
+            _query_parameters = std::move(that._query_parameters);
+            _body = std::move(that._body);
+        }
+        return *this;
+    }
+
+    const std::string& getHttpVersion() const {
         return _http_version;
     }
 
-    std::string getPath() const {
+    const std::string& getPath() const {
         return _path;
     }
 
-    http::Method getMethod() const {
+    const http::Method& getMethod() const {
         return _method;
     }
 
-    http::Headers getHeaders() const {
+    const http::Headers& getHeaders() const {
         return _headers;
     }
 
@@ -69,11 +111,11 @@ public:
         return _query_parameters.find(key) != _query_parameters.end();
     }
 
-    std::string getQuery(const std::string& key) const {
+    const std::string& getQuery(const std::string& key) const {
         return _query_parameters.at(key);
     }
 
-    std::string getBody() const {
+    const std::string& getBody() const {
         return _body;
     }
 
