@@ -20,11 +20,11 @@ constexpr uint8_t kDefaultMaxConnection = 8;
 
 namespace http {
 
-class HttpServer {
+class Server {
   public:
     typedef std::function<void(const Request& request, Response& response)> OnRouteCallback;
 
-    HttpServer(uint16_t port,
+    Server(uint16_t port,
                uint8_t max_connections = kDefaultMaxConnection);
 
     inline void onGet(const std::string& route,
@@ -39,7 +39,7 @@ class HttpServer {
 
     void start();
 
-    ~HttpServer() = default;
+    ~Server() = default;
 
   private:
     const OnRouteCallback* findRouteCallback(const Method& method,

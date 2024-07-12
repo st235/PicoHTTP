@@ -25,7 +25,7 @@ int main() {
         printf("Connected.\n");
     }
 
-    http::HttpServer server(3036);
+    http::Server server(3036);
 
     server.onGet("/", [](const auto& request, auto& response) {
         response.addHeader("Content-Type", "text/html; charset=utf-8");

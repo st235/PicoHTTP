@@ -13,7 +13,7 @@
 
 namespace http {
 
-HttpServer::HttpServer(uint16_t port, uint8_t max_connections):
+Server::Server(uint16_t port, uint8_t max_connections):
     _port(port),
     _max_connections(max_connections),
     _tcp_server(std::make_unique<__internal::TcpServer>(max_connections)),
@@ -28,7 +28,7 @@ HttpServer::HttpServer(uint16_t port, uint8_t max_connections):
     });
 }
 
-const HttpServer::OnRouteCallback* HttpServer::findRouteCallback(const Method& method,
+const Server::OnRouteCallback* Server::findRouteCallback(const Method& method,
                                                const std::string& route) const {
     if (_routes.find(method) == _routes.end()) {
         return nullptr;
@@ -41,7 +41,7 @@ const HttpServer::OnRouteCallback* HttpServer::findRouteCallback(const Method& m
     return &(_routes.at(method).at(route));
 }
 
-void HttpServer::onMethod(const Method& method,
+void Server::onMethod(const Method& method,
                           const std::string& route,
                           OnRouteCallback callback) {
     if (_routes.find(method) == _routes.end()) {
@@ -51,7 +51,7 @@ void HttpServer::onMethod(const Method& method,
     _routes[method][route] = callback;
 }
 
-void HttpServer::start() {
+void Server::start() {
     auto* tcp_server = _tcp_server.get();
 
     _tcp_server->setOnDataReceivedCallback([=, tcp_server](uint32_t connection_id, uint8_t* data, uint16_t length) {
