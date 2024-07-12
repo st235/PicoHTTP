@@ -20,39 +20,44 @@ constexpr uint8_t kDefaultMaxConnection = 8;
 
 namespace http {
 
-class HttpServer {
+class Server {
   public:
-    typedef std::function<void(const HttpRequest& request, HttpResponse& response)> OnRouteCallback;
+    typedef std::function<void(const Request& request, Response& response)> OnRouteCallback;
 
-    HttpServer(uint16_t port,
-               uint8_t max_connections = kDefaultMaxConnection);
+    Server(uint16_t port,
+           uint8_t max_connections = kDefaultMaxConnection);
 
     inline void onGet(const std::string& route,
                       OnRouteCallback callback) {
-      onMethod(HttpMethod::GET, route, callback);
+      onMethod(Method::kGet, route, callback);
     }
 
     inline void onPost(const std::string& route,
                        OnRouteCallback callback) {
-      onMethod(HttpMethod::POST, route, callback);
+      onMethod(Method::kPost, route, callback);
     }
 
     void start();
 
-    ~HttpServer() = default;
+    ~Server() = default;
 
   private:
-    const OnRouteCallback* findRouteCallback(const HttpMethod& method,
-                                       const std::string& route) const;
-
-    void onMethod(const HttpMethod& method,
-                  const std::string& route,
-                  OnRouteCallback callback);
-
     uint16_t _port;
     uint8_t _max_connections;
-    std::unique_ptr<__http_internal::TcpServer> _tcp_server;
-    std::unordered_map<HttpMethod, std::unordered_map<std::string, OnRouteCallback>> _routes;
+    tcp::Server _tcp_server;
+    std::unordered_map<Method, std::unordered_map<std::string, OnRouteCallback>> _routes;
+
+    Server(const Server& that) = delete;
+    Server& operator=(const Server& that) = delete;
+    Server(Server&& that) = delete;
+    Server& operator=(Server&& that) = delete;
+
+    const OnRouteCallback* findRouteCallback(const Method& method,
+                                       const std::string& route) const;
+
+    void onMethod(const Method& method,
+                  const std::string& route,
+                  OnRouteCallback callback);
 };
 
 }

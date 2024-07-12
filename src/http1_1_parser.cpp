@@ -21,9 +21,11 @@ constexpr char kHttpWordsDelimiter = ' ';
 
 } // namespace
 
-namespace __http_internal {
+namespace http {
 
-http::HttpRequest Http11Parser::fromRequest(const std::string& request) const {
+namespace __internal {
+
+http::Request Http11Parser::fromRequest(const std::string& request) const {
     std::vector<std::string> requst_split = Split(request, /* delimiter= */ std::string(kHttpNewLine));
 
     std::string start_line = requst_split[0];
@@ -33,10 +35,10 @@ http::HttpRequest Http11Parser::fromRequest(const std::string& request) const {
     std::string route = GetRoute(raw_route);
     std::unordered_map<std::string, std::string> query_parameters = ParseQueryParameters(raw_route);
 
-    http::HttpMethod http_method = ConvertStringToHttpMethod(start_line_split[0]);
+    http::Method http_method = ConvertStringToHttpMethod(start_line_split[0]);
     std::string http_version = start_line_split[2];
 
-    http::HttpHeaders headers;
+    http::Headers headers;
 
     size_t headers_line = 1;
     while (headers_line < requst_split.size()) {
@@ -49,7 +51,7 @@ http::HttpRequest Http11Parser::fromRequest(const std::string& request) const {
         std::string key;
         std::string value;
         if (ParseSingleHeaderLine(header_candidate, key, value)) {
-            headers.put(key, value);
+            headers[key] = value;
         }
 
         headers_line++;
@@ -61,10 +63,10 @@ http::HttpRequest Http11Parser::fromRequest(const std::string& request) const {
         headers_line++;
     }
 
-    return http::HttpRequest(http_version, route, http_method, headers, query_parameters, Trim(body.str()));
+    return http::Request(http_version, route, http_method, headers, query_parameters, Trim(body.str()));
 }
 
-std::string Http11Parser::toResponse(const http::HttpResponse& response, const std::string& body) const {
+std::string Http11Parser::toResponse(const http::Response& response, const std::string& body) const {
     std::stringstream sstream;
 
     // Main line: HTTP/1.1 403 Forbidden
@@ -84,4 +86,6 @@ std::string Http11Parser::toResponse(const http::HttpResponse& response, const s
     return sstream.str();
 }
 
-} // namespace __http_internal
+} // namespace __internal
+
+} // namespace http

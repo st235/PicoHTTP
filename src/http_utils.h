@@ -20,49 +20,52 @@ bool ParseKeyValueStatement(const std::string& statement,
         return false;
     }
 
-    key = __http_internal::Trim(statement.substr(0, delimiter_position));
-    value = __http_internal::Trim(statement.substr(delimiter_position + 1, statement.length() - delimiter_position - 1));
+    key = http::__internal::Trim(statement.substr(0, delimiter_position));
+    value = http::__internal::Trim(statement.substr(delimiter_position + 1, statement.length() - delimiter_position - 1));
 
     return !key.empty() && !value.empty();
 }
 
 }  // namespace
 
-namespace __http_internal {
+namespace http {
 
-http::HttpMethod ConvertStringToHttpMethod(const std::string& method) {
+namespace __internal {
+
+http::Method ConvertStringToHttpMethod(const std::string& method) {
     if (method == "GET") {
-        return http::HttpMethod::GET;
+        return http::Method::kGet;
     } else if (method == "HEAD") {
-        return http::HttpMethod::HEAD;
+        return http::Method::kHead;
     } else if (method == "POST") {
-        return http::HttpMethod::POST;
+        return http::Method::kPost;
     } else if (method == "PUT") {
-        return http::HttpMethod::PUT;
+        return http::Method::kPut;
     } else if (method == "DELETE") {
-        return http::HttpMethod::DELETE;
+        return http::Method::kDelete;
     } else if (method == "CONNECT") {
-        return http::HttpMethod::CONNECT;
+        return http::Method::kConnect;
     } else if (method == "OPTIONS") {
-        return http::HttpMethod::OPTIONS;
+        return http::Method::kOptions;
     } else if (method == "TRACE") {
-        return http::HttpMethod::TRACE;
+        return http::Method::kTrace;
     } else if (method == "PATCH") {
-        return http::HttpMethod::PATCH;
+        return http::Method::kPatch;
     } else {
         // TODO: return some unknown type.
-        return http::HttpMethod::GET;
+        return http::Method::kGet;
     }
 }
 
-std::string GetHttpStatusCodeDescription(const http::HttpStatusCode& status_code) {
+std::string GetHttpStatusCodeDescription(const http::StatusCode& status_code) {
     switch(status_code) {
-        case http::HttpStatusCode::OK: return std::string("200 OK");
-        case http::HttpStatusCode::BAD_REQUEST: return std::string("400 Bad Request");
-        case http::HttpStatusCode::UNAUTHORIZED: return std::string("401 Unauthorized");
-        case http::HttpStatusCode::FORBIDDEN: return std::string("403 Forbidden");
-        case http::HttpStatusCode::NOT_FOUND: return std::string("404 Not Found");
-        case http::HttpStatusCode::INTERNAL_SERVER_ERROR: return std::string("500 Internal Server Error");
+        case http::StatusCode::kOk: return std::string("200 OK");
+        case http::StatusCode::kBadRequest: return std::string("400 Bad Request");
+        case http::StatusCode::kUnauthorized: return std::string("401 Unauthorized");
+        case http::StatusCode::kForbidden: return std::string("403 Forbidden");
+        case http::StatusCode::kNotFound: return std::string("404 Not Found");
+        case http::StatusCode::kInternalServerError: return std::string("500 Internal Server Error");
+        // TODO(st235): add all conversions.
         default: return std::string("418 I'm a teapot");
     }
 }
@@ -106,6 +109,8 @@ bool ParseSingleHeaderLine(const std::string& header,
     return ParseKeyValueStatement(header, /* delimiter= */ ':', key, value);
 }
 
-} // namespace __http_internal
+} // namespace __internal
+
+} // namespace http
 
 #endif // __HTTP_UTILS_H__

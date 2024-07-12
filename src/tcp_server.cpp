@@ -44,7 +44,7 @@ err_t on_receive_data(void* argument,
                       pbuf* pbuf,
                       err_t err) {
     cyw43_arch_lwip_check();
-    auto* connection = static_cast<__http_internal::TcpConnection*>(argument);
+    auto* connection = static_cast<tcp::Connection*>(argument);
 
     if (!connection) {
         PLOGD("No connection found on receiving data.");
@@ -91,7 +91,7 @@ err_t on_poll(void* argument,
               tcp_pcb* pcb) {
     cyw43_arch_lwip_check();
 
-    auto* connection = static_cast<__http_internal::TcpConnection*>(argument);
+    auto* connection = static_cast<tcp::Connection*>(argument);
 
     if (!connection) {
         PLOGD("Argument was null");
@@ -131,7 +131,7 @@ err_t on_sent(void* argument,
              u16_t len) {
     cyw43_arch_lwip_check();
 
-    auto* connection = static_cast<__http_internal::TcpConnection*>(argument);
+    auto* connection = static_cast<tcp::Connection*>(argument);
 
     if (!connection) {
         PLOGD("Argument was null");
@@ -174,7 +174,7 @@ void on_error(void* argument,
         PLOGD("TCP Connection failed with %d\n", error);
     }
 
-    auto* connection = static_cast<__http_internal::TcpConnection*>(argument);
+    auto* connection = static_cast<tcp::Connection*>(argument);
     if (connection) {
         PLOGD("Marking connection as closed, from on_error.");
         connection->close();
@@ -206,7 +206,7 @@ err_t on_accept_connection(void* argument,
         return ERR_ABRT;
     }
 
-    auto* server = static_cast<__http_internal::TcpServer*>(argument);
+    auto* server = static_cast<tcp::Server*>(argument);
     auto* connection = server->createConnection(new_pcb);
 
     if (!connection) {
@@ -229,9 +229,9 @@ err_t on_accept_connection(void* argument,
 
 } // namespace
 
-namespace __http_internal {
+namespace tcp {
 
-bool TcpServer::listen(uint16_t port) {
+bool Server::listen(uint16_t port) {
     bool is_listening = _listen_pcb != nullptr;
     if (is_listening) {
         return false;
@@ -250,7 +250,7 @@ bool TcpServer::listen(uint16_t port) {
     return _listen_pcb != nullptr;
 }
 
-bool TcpServer::write(uint32_t connection_id, const void* data, uint16_t size) const {
+bool Server::write(uint32_t connection_id, const void* data, uint16_t size) const {
     auto* connection = findConnectionById(connection_id);
     if (connection->write(data, size)) {
         return connection->flush();
@@ -259,18 +259,18 @@ bool TcpServer::write(uint32_t connection_id, const void* data, uint16_t size) c
     }
 }
 
-void TcpServer::close(uint32_t connection_id) const {
+void Server::close(uint32_t connection_id) const {
     auto* connection = findConnectionById(connection_id);
     connection->close();
 }
 
-TcpConnection* TcpServer::createConnection(tcp_pcb* pcb) {
+Connection* Server::createConnection(tcp_pcb* pcb) {
     if (_connections.size() >= _max_connections) {
         PLOGD("Connection was aborted, as the amount of open connections is at its limit.");
         return nullptr;
     }
 
-    auto connection = std::make_unique<TcpConnection>(*this, pcb);
+    auto connection = std::make_unique<Connection>(*this, *pcb);
     auto* connection_ptr = connection.get();
     uint32_t connection_id = connection->id();
 
@@ -280,7 +280,7 @@ TcpConnection* TcpServer::createConnection(tcp_pcb* pcb) {
     return connection_ptr;
 }
 
-void TcpServer::onConnected(TcpConnection* connection) {
+void Server::onConnected(Connection* connection) const {
     if (!connection) {
         PLOGD("Connected empty connection?!");
         return;
@@ -291,7 +291,7 @@ void TcpServer::onConnected(TcpConnection* connection) {
     }
 }
 
-bool TcpServer::onDataReceived(TcpConnection* connection, uint8_t* data, uint16_t size) {
+bool Server::onDataReceived(Connection* connection, uint8_t* data, uint16_t size) const {
     if (_onDataReceivedCallback == nullptr) {
         return false;
     }
@@ -304,7 +304,7 @@ bool TcpServer::onDataReceived(TcpConnection* connection, uint8_t* data, uint16_
     return _onDataReceivedCallback(connection->id(), data, size);
 }
 
-void TcpServer::onConnectionClosed(TcpConnection* connection) {
+void Server::onConnectionClosed(Connection* connection) {
     if (!connection) {
         PLOGD("Trying to close empty connection.");
         return;
@@ -318,4 +318,18 @@ void TcpServer::onConnectionClosed(TcpConnection* connection) {
     }
 }
 
-} // _http_internal
+bool Server::stop() {
+    if (_listen_pcb != nullptr) {
+        tcp_close(_listen_pcb);
+        _listen_pcb = nullptr;
+        return true;
+    }
+
+    return false;
+}
+
+Server::~Server() {
+    stop();
+}
+
+} // namespace tcp

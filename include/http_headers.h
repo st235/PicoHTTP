@@ -8,17 +8,15 @@
 
 namespace http {
 
-class HttpHeaders {
+class Headers {
 public:
-    HttpHeaders() = default;
+    Headers() = default;
 
-    HttpHeaders(const HttpHeaders& that): _headers() {
-        if (this != &that) {
-            this->_headers = that._headers;
-        }
+    Headers(const Headers& that): _headers() {
+        this->_headers = that._headers;
     }
 
-    HttpHeaders& operator=(const HttpHeaders& that) {
+    Headers& operator=(const Headers& that) {
         if (this != &that) {
             this->_headers.clear();
             this->_headers = that._headers;
@@ -26,11 +24,11 @@ public:
         return *this;
     }
 
-    HttpHeaders(HttpHeaders&& that) {
+    Headers(Headers&& that) {
         this->_headers = std::move(that._headers);
     }
 
-    HttpHeaders& operator=(HttpHeaders&& that) {
+    Headers& operator=(Headers&& that) {
         if (this != &that) {
             this->_headers = std::move(that._headers);
         }
@@ -40,35 +38,22 @@ public:
     std::vector<std::string> keys() const {
         std::vector<std::string> keys;
         keys.reserve(_headers.size());
-        for (auto kv_pair: _headers) {
-            keys.push_back(kv_pair.first);
+        for (const auto& [key, _]: _headers) {
+            keys.push_back(key);
         }
         return keys;
     }
 
-    inline bool contains(const std::string& key) const {
-        return _headers.find(key) != _headers.end();
+    std::string& operator[](const std::string& key) { 
+        return _headers[key];
     }
 
-    bool put(const std::string& key, const std::string& value) {
-        if (contains(key)) {
-            return false;
-        }
-
-        _headers[key] = value;
-        return true;
-    }
-
-    inline std::string get(const std::string& key) const {
+    const std::string& operator[](const std::string& key) const { 
         return _headers.at(key);
     }
 
-    std::string operator[](const std::string& key) const { 
-        return get(key);
-    }
-
-    std::string& operator[](const std::string& key) { 
-        return _headers[key];
+    inline bool contains(const std::string& key) const {
+        return _headers.find(key) != _headers.end();
     }
 
     size_t size() const {
@@ -78,7 +63,7 @@ public:
     std::string toString() const {
         std::stringstream sstream;
 
-        sstream << "HttpHeaders{headers=[" << std::endl;
+        sstream << "Headers{headers=[" << std::endl;
 
         for (auto i = _headers.begin(); i != _headers.end(); i++) {
             if (i != _headers.begin()) {

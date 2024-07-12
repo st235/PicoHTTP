@@ -5,19 +5,19 @@
 
 namespace http {
 
-class HttpRequest;
-class HttpResponse;
+class Request;
+class Response;
 
-} // namespace http
-
-namespace __http_internal {
+namespace __internal {
 
 class Http11Parser {
 public:
-    http::HttpRequest fromRequest(const std::string& request) const;
-    std::string toResponse(const http::HttpResponse& response, const std::string& body) const;
+    http::Request fromRequest(const std::string& request) const;
+    std::string toResponse(const http::Response& response, const std::string& body) const;
 };
 
-} // namespace __http_internal
+} // namespace __internal
+
+} // namespace http
 
 #endif // __HTTP1_1_PARSER_H__
