@@ -34,26 +34,26 @@ namespace __internal {
 
 http::Method ConvertStringToHttpMethod(const std::string& method) {
     if (method == "GET") {
-        return http::Method::GET;
+        return http::Method::kGet;
     } else if (method == "HEAD") {
-        return http::Method::HEAD;
+        return http::Method::kHead;
     } else if (method == "POST") {
-        return http::Method::POST;
+        return http::Method::kPost;
     } else if (method == "PUT") {
-        return http::Method::PUT;
+        return http::Method::kPut;
     } else if (method == "DELETE") {
-        return http::Method::DELETE;
+        return http::Method::kDelete;
     } else if (method == "CONNECT") {
-        return http::Method::CONNECT;
+        return http::Method::kConnect;
     } else if (method == "OPTIONS") {
-        return http::Method::OPTIONS;
+        return http::Method::kOptions;
     } else if (method == "TRACE") {
-        return http::Method::TRACE;
+        return http::Method::kTrace;
     } else if (method == "PATCH") {
-        return http::Method::PATCH;
+        return http::Method::kPatch;
     } else {
         // TODO: return some unknown type.
-        return http::Method::GET;
+        return http::Method::kGet;
     }
 }
 

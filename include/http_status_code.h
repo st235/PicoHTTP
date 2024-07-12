@@ -3,8 +3,9 @@
 
 namespace http {
 
-// Http Response Status codes, see mdn docs for more info:
-// https://developer.mozilla.org/en-US/docs/Web/HTTP/Status.
+// Http Response Status codes.
+// See https://developer.mozilla.org/en-US/docs/Web/HTTP/Status
+// for more info.
 enum class StatusCode {
     // Information responses.
     kContinue = 100,

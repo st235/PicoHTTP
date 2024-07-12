@@ -29,12 +29,12 @@ class Server {
 
     inline void onGet(const std::string& route,
                       OnRouteCallback callback) {
-      onMethod(Method::GET, route, callback);
+      onMethod(Method::kGet, route, callback);
     }
 
     inline void onPost(const std::string& route,
                        OnRouteCallback callback) {
-      onMethod(Method::POST, route, callback);
+      onMethod(Method::kPost, route, callback);
     }
 
     void start();
