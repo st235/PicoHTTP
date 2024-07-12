@@ -42,17 +42,22 @@ class Server {
     ~Server() = default;
 
   private:
+    uint16_t _port;
+    uint8_t _max_connections;
+    tcp::Server _tcp_server;
+    std::unordered_map<Method, std::unordered_map<std::string, OnRouteCallback>> _routes;
+
+    Server(const Server& that) = delete;
+    Server& operator=(const Server& that) = delete;
+    Server(Server&& that) = delete;
+    Server& operator=(Server&& that) = delete;
+
     const OnRouteCallback* findRouteCallback(const Method& method,
                                        const std::string& route) const;
 
     void onMethod(const Method& method,
                   const std::string& route,
                   OnRouteCallback callback);
-
-    uint16_t _port;
-    uint8_t _max_connections;
-    std::unique_ptr<tcp::Server> _tcp_server;
-    std::unordered_map<Method, std::unordered_map<std::string, OnRouteCallback>> _routes;
 };
 
 }

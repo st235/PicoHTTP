@@ -16,20 +16,20 @@ namespace http {
 Server::Server(uint16_t port, uint8_t max_connections):
     _port(port),
     _max_connections(max_connections),
-    _tcp_server(std::make_unique<tcp::Server>(max_connections)),
+    _tcp_server(max_connections),
     _routes() {
 
-    _tcp_server->setOnConnectedCallback([](uint32_t connection_id) {
+    _tcp_server.setOnConnectedCallback([](uint32_t connection_id) {
         PLOGD("Connected: %d\n", connection_id);
     });
 
-    _tcp_server->setOnClosedCallback([](uint32_t connection_id) {
+    _tcp_server.setOnClosedCallback([](uint32_t connection_id) {
         PLOGD("Closed: %d\n", connection_id);
     });
 }
 
 const Server::OnRouteCallback* Server::findRouteCallback(const Method& method,
-                                               const std::string& route) const {
+                                                         const std::string& route) const {
     if (_routes.find(method) == _routes.end()) {
         return nullptr;
     }
@@ -52,9 +52,7 @@ void Server::onMethod(const Method& method,
 }
 
 void Server::start() {
-    auto* tcp_server = _tcp_server.get();
-
-    _tcp_server->setOnDataReceivedCallback([=, tcp_server](uint32_t connection_id, uint8_t* data, uint16_t length) {
+    _tcp_server.setOnDataReceivedCallback([=](uint32_t connection_id, uint8_t* data, uint16_t length) {
         std::string payload(data, data + length);
 
         // TODO(st235): add parser interface.
@@ -63,7 +61,7 @@ void Server::start() {
 
         const auto* callback = this->findRouteCallback(http_request.getMethod(), http_request.getPath());
 
-        Response response(connection_id, *tcp_server, http_parser);
+        Response response(connection_id, _tcp_server, http_parser);
 
         if (!callback) {
             response.send("");
@@ -75,7 +73,7 @@ void Server::start() {
     });
 
 
-    _tcp_server->listen(_port);
+    _tcp_server.listen(_port);
 }
 
 }
