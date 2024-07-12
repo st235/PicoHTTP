@@ -52,8 +52,8 @@ public:
 private:
     Server(const Server& that) = delete;
     Server& operator=(const Server& that) = delete;
-
-    // TODO: add destructor to clear resources and stop listeners.
+    Server(Server&& that) = delete;
+    Server& operator=(Server&& that) = delete;
 
     inline Connection* findConnectionById(uint32_t connection_id) const {
         if (_connections.find(connection_id) == _connections.end()) {
