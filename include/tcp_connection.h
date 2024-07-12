@@ -10,9 +10,9 @@ namespace tcp {
 
 class Server;
 
-class TcpConnection {
+class Connection {
 public:
-    TcpConnection(Server& server,
+    Connection(Server& server,
                   tcp_pcb* pcb):
         _is_closing(false),
         _server(server),
@@ -36,8 +36,8 @@ public:
     bool flush() const;
 
 private:
-    TcpConnection(const TcpConnection& that) = delete;
-    TcpConnection& operator=(const TcpConnection& that) = delete;
+    Connection(const Connection& that) = delete;
+    Connection& operator=(const Connection& that) = delete;
 
     tcp_pcb* _pcb;
     Server& _server;

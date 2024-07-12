@@ -7,7 +7,7 @@
 
 namespace tcp {
 
-bool TcpConnection::sink(pbuf* pbuf) {
+bool Connection::sink(pbuf* pbuf) {
     uint8_t* data = new uint8_t[pbuf->tot_len];
     for (uint16_t i = 0; i < pbuf->tot_len; i++) {
         data[i] = pbuf_get_at(pbuf, i);
@@ -21,7 +21,7 @@ bool TcpConnection::sink(pbuf* pbuf) {
     return sink_status;
 }
 
-bool TcpConnection::write(const void* data, uint16_t size) const {
+bool Connection::write(const void* data, uint16_t size) const {
     if (_is_closing) {
         PLOGD("Accessing closed connection.");
         return false;
@@ -40,7 +40,7 @@ bool TcpConnection::write(const void* data, uint16_t size) const {
     return tcp_write(_pcb, data, size, /* apiflags= */ TCP_WRITE_FLAG_COPY) == ERR_OK;
 }
 
-bool TcpConnection::flush() const {
+bool Connection::flush() const {
     if (_is_closing) {
         PLOGD("Accessing closed connection.");
         return false;

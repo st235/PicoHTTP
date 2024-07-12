@@ -44,7 +44,7 @@ err_t on_receive_data(void* argument,
                       pbuf* pbuf,
                       err_t err) {
     cyw43_arch_lwip_check();
-    auto* connection = static_cast<tcp::TcpConnection*>(argument);
+    auto* connection = static_cast<tcp::Connection*>(argument);
 
     if (!connection) {
         PLOGD("No connection found on receiving data.");
@@ -91,7 +91,7 @@ err_t on_poll(void* argument,
               tcp_pcb* pcb) {
     cyw43_arch_lwip_check();
 
-    auto* connection = static_cast<tcp::TcpConnection*>(argument);
+    auto* connection = static_cast<tcp::Connection*>(argument);
 
     if (!connection) {
         PLOGD("Argument was null");
@@ -131,7 +131,7 @@ err_t on_sent(void* argument,
              u16_t len) {
     cyw43_arch_lwip_check();
 
-    auto* connection = static_cast<tcp::TcpConnection*>(argument);
+    auto* connection = static_cast<tcp::Connection*>(argument);
 
     if (!connection) {
         PLOGD("Argument was null");
@@ -174,7 +174,7 @@ void on_error(void* argument,
         PLOGD("TCP Connection failed with %d\n", error);
     }
 
-    auto* connection = static_cast<tcp::TcpConnection*>(argument);
+    auto* connection = static_cast<tcp::Connection*>(argument);
     if (connection) {
         PLOGD("Marking connection as closed, from on_error.");
         connection->close();
@@ -264,13 +264,13 @@ void Server::close(uint32_t connection_id) const {
     connection->close();
 }
 
-TcpConnection* Server::createConnection(tcp_pcb* pcb) {
+Connection* Server::createConnection(tcp_pcb* pcb) {
     if (_connections.size() >= _max_connections) {
         PLOGD("Connection was aborted, as the amount of open connections is at its limit.");
         return nullptr;
     }
 
-    auto connection = std::make_unique<TcpConnection>(*this, pcb);
+    auto connection = std::make_unique<Connection>(*this, pcb);
     auto* connection_ptr = connection.get();
     uint32_t connection_id = connection->id();
 
@@ -280,7 +280,7 @@ TcpConnection* Server::createConnection(tcp_pcb* pcb) {
     return connection_ptr;
 }
 
-void Server::onConnected(TcpConnection* connection) {
+void Server::onConnected(Connection* connection) {
     if (!connection) {
         PLOGD("Connected empty connection?!");
         return;
@@ -291,7 +291,7 @@ void Server::onConnected(TcpConnection* connection) {
     }
 }
 
-bool Server::onDataReceived(TcpConnection* connection, uint8_t* data, uint16_t size) {
+bool Server::onDataReceived(Connection* connection, uint8_t* data, uint16_t size) {
     if (_onDataReceivedCallback == nullptr) {
         return false;
     }
@@ -304,7 +304,7 @@ bool Server::onDataReceived(TcpConnection* connection, uint8_t* data, uint16_t s
     return _onDataReceivedCallback(connection->id(), data, size);
 }
 
-void Server::onConnectionClosed(TcpConnection* connection) {
+void Server::onConnectionClosed(Connection* connection) {
     if (!connection) {
         PLOGD("Trying to close empty connection.");
         return;

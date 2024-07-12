@@ -35,11 +35,11 @@ public:
         _onClosedCallback = callback;
     }
 
-    TcpConnection* createConnection(tcp_pcb* pcb);
+    Connection* createConnection(tcp_pcb* pcb);
 
-    void onConnected(TcpConnection* connection);
-    bool onDataReceived(TcpConnection* connection, uint8_t* data, uint16_t size);
-    void onConnectionClosed(TcpConnection* connection);
+    void onConnected(Connection* connection);
+    bool onDataReceived(Connection* connection, uint8_t* data, uint16_t size);
+    void onConnectionClosed(Connection* connection);
 
     bool write(uint32_t connection_id, const void* data, uint16_t size) const;
     void close(uint32_t connection_id) const;
@@ -55,7 +55,7 @@ private:
 
     // TODO: add destructor to clear resources and stop listeners.
 
-    inline TcpConnection* findConnectionById(uint32_t connection_id) const {
+    inline Connection* findConnectionById(uint32_t connection_id) const {
         if (_connections.find(connection_id) == _connections.end()) {
             return nullptr;
         }
@@ -64,7 +64,7 @@ private:
 
     uint8_t _max_connections;
     tcp_pcb* _listen_pcb = nullptr;
-    std::unordered_map<uint32_t, std::unique_ptr<TcpConnection>> _connections;
+    std::unordered_map<uint32_t, std::unique_ptr<Connection>> _connections;
 
     OnConnectedCallback _onConnectedCallback = nullptr;
     OnDataReceivedCallback _onDataReceivedCallback = nullptr;
