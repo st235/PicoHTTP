@@ -59,12 +59,13 @@ http::Method ConvertStringToHttpMethod(const std::string& method) {
 
 std::string GetHttpStatusCodeDescription(const http::StatusCode& status_code) {
     switch(status_code) {
-        case http::StatusCode::OK: return std::string("200 OK");
-        case http::StatusCode::BAD_REQUEST: return std::string("400 Bad Request");
-        case http::StatusCode::UNAUTHORIZED: return std::string("401 Unauthorized");
-        case http::StatusCode::FORBIDDEN: return std::string("403 Forbidden");
-        case http::StatusCode::NOT_FOUND: return std::string("404 Not Found");
-        case http::StatusCode::INTERNAL_SERVER_ERROR: return std::string("500 Internal Server Error");
+        case http::StatusCode::kOk: return std::string("200 OK");
+        case http::StatusCode::kBadRequest: return std::string("400 Bad Request");
+        case http::StatusCode::kUnauthorized: return std::string("401 Unauthorized");
+        case http::StatusCode::kForbidden: return std::string("403 Forbidden");
+        case http::StatusCode::kNotFound: return std::string("404 Not Found");
+        case http::StatusCode::kInternalServerError: return std::string("500 Internal Server Error");
+        // TODO(st235): add all conversions.
         default: return std::string("418 I'm a teapot");
     }
 }

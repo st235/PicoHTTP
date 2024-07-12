@@ -20,7 +20,7 @@ public:
         _connection_id(connection_id),
         _tcp_server(tcp_server),
         _parser(parser),
-        _status_code(StatusCode::OK),
+        _status_code(StatusCode::kOk),
         _headers() {
         // Empty on purpose.
     }
