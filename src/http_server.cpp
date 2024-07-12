@@ -63,7 +63,7 @@ void Server::start() {
 
         const auto* callback = this->findRouteCallback(http_request.getMethod(), http_request.getPath());
 
-        Response response(connection_id, tcp_server, http_parser);
+        Response response(connection_id, *tcp_server, http_parser);
 
         if (!callback) {
             response.send("");
