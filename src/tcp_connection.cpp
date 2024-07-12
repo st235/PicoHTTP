@@ -37,7 +37,7 @@ bool Connection::write(const void* data, uint16_t size) const {
         return true;
     }
 
-    return tcp_write(_pcb, data, size, /* apiflags= */ TCP_WRITE_FLAG_COPY) == ERR_OK;
+    return tcp_write(&_pcb, data, size, /* apiflags= */ TCP_WRITE_FLAG_COPY) == ERR_OK;
 }
 
 bool Connection::flush() const {
@@ -46,7 +46,7 @@ bool Connection::flush() const {
         return false;
     }
 
-    return tcp_output(_pcb) == ERR_OK;
+    return tcp_output(&_pcb) == ERR_OK;
 }
 
 } // namespace tcp

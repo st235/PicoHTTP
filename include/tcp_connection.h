@@ -13,10 +13,10 @@ class Server;
 class Connection {
 public:
     Connection(Server& server,
-                  tcp_pcb* pcb):
-        _is_closing(false),
+               tcp_pcb& pcb):
         _server(server),
-        _pcb(pcb) {
+        _pcb(pcb),
+        _is_closing(false) {
         // Empty on purpose.
     }
 
@@ -24,11 +24,11 @@ public:
         return reinterpret_cast<uint32_t>(this);
     }
 
-    inline tcp_pcb* getPcb() { return _pcb; }
-    inline Server& getServer() { return _server; }
+    inline tcp_pcb& getPcb() const { return _pcb; }
+    inline Server& getServer() const { return _server; }
 
-    inline bool isClosing() const { return _is_closing; }
     inline void close() { _is_closing = true; }
+    inline bool isClosing() const { return _is_closing; }
 
     bool sink(pbuf* pbuf);
     bool write(const void* data, uint16_t size) const;
@@ -36,13 +36,19 @@ public:
     bool flush() const;
 
 private:
-    Connection(const Connection& that) = delete;
-    Connection& operator=(const Connection& that) = delete;
-
-    tcp_pcb* _pcb;
+    // Connection does not own neither server nor pcb,
+    // connection just observes them and interacts.
     Server& _server;
+    tcp_pcb& _pcb;
 
     bool _is_closing;
+
+    // Connection cannot be copied or moved,
+    // only non-owning raw pointer can be passed.
+    Connection(const Connection& that) = delete;
+    Connection& operator=(const Connection& that) = delete;
+    Connection(Connection&& that) = delete;
+    Connection& operator=(Connection&& that) = delete;
 };
 
 } // namespace tcp

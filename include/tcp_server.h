@@ -37,8 +37,8 @@ public:
 
     Connection* createConnection(tcp_pcb* pcb);
 
-    void onConnected(Connection* connection);
-    bool onDataReceived(Connection* connection, uint8_t* data, uint16_t size);
+    void onConnected(Connection* connection) const;
+    bool onDataReceived(Connection* connection, uint8_t* data, uint16_t size) const;
     void onConnectionClosed(Connection* connection);
 
     bool write(uint32_t connection_id, const void* data, uint16_t size) const;
@@ -47,9 +47,17 @@ public:
     bool listen(uint16_t port);
     bool stop();
 
-    ~Server() = default;
+    ~Server();
 
 private:
+    uint8_t _max_connections;
+    tcp_pcb* _listen_pcb = nullptr;
+    std::unordered_map<uint32_t, std::unique_ptr<Connection>> _connections;
+
+    OnConnectedCallback _onConnectedCallback = nullptr;
+    OnDataReceivedCallback _onDataReceivedCallback = nullptr;
+    OnClosedCallback _onClosedCallback = nullptr;
+
     Server(const Server& that) = delete;
     Server& operator=(const Server& that) = delete;
     Server(Server&& that) = delete;
@@ -61,14 +69,6 @@ private:
         }
         return _connections.at(connection_id).get();
     }
-
-    uint8_t _max_connections;
-    tcp_pcb* _listen_pcb = nullptr;
-    std::unordered_map<uint32_t, std::unique_ptr<Connection>> _connections;
-
-    OnConnectedCallback _onConnectedCallback = nullptr;
-    OnDataReceivedCallback _onDataReceivedCallback = nullptr;
-    OnClosedCallback _onClosedCallback = nullptr;
 };
 
 } // namespace tcp

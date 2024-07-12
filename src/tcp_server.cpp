@@ -270,7 +270,7 @@ Connection* Server::createConnection(tcp_pcb* pcb) {
         return nullptr;
     }
 
-    auto connection = std::make_unique<Connection>(*this, pcb);
+    auto connection = std::make_unique<Connection>(*this, *pcb);
     auto* connection_ptr = connection.get();
     uint32_t connection_id = connection->id();
 
@@ -280,7 +280,7 @@ Connection* Server::createConnection(tcp_pcb* pcb) {
     return connection_ptr;
 }
 
-void Server::onConnected(Connection* connection) {
+void Server::onConnected(Connection* connection) const {
     if (!connection) {
         PLOGD("Connected empty connection?!");
         return;
@@ -291,7 +291,7 @@ void Server::onConnected(Connection* connection) {
     }
 }
 
-bool Server::onDataReceived(Connection* connection, uint8_t* data, uint16_t size) {
+bool Server::onDataReceived(Connection* connection, uint8_t* data, uint16_t size) const {
     if (_onDataReceivedCallback == nullptr) {
         return false;
     }
@@ -316,6 +316,20 @@ void Server::onConnectionClosed(Connection* connection) {
     if (_onClosedCallback) {
         _onClosedCallback(connection_id);
     }
+}
+
+bool Server::stop() {
+    if (_listen_pcb != nullptr) {
+        tcp_close(_listen_pcb);
+        _listen_pcb = nullptr;
+        return true;
+    }
+
+    return false;
+}
+
+Server::~Server() {
+    stop();
 }
 
 } // namespace tcp
