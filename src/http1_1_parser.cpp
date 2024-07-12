@@ -35,7 +35,7 @@ http::HttpRequest Http11Parser::fromRequest(const std::string& request) const {
     std::string route = GetRoute(raw_route);
     std::unordered_map<std::string, std::string> query_parameters = ParseQueryParameters(raw_route);
 
-    http::HttpMethod http_method = ConvertStringToHttpMethod(start_line_split[0]);
+    http::Method http_method = ConvertStringToHttpMethod(start_line_split[0]);
     std::string http_version = start_line_split[2];
 
     http::Headers headers;

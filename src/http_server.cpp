@@ -28,7 +28,7 @@ HttpServer::HttpServer(uint16_t port, uint8_t max_connections):
     });
 }
 
-const HttpServer::OnRouteCallback* HttpServer::findRouteCallback(const HttpMethod& method,
+const HttpServer::OnRouteCallback* HttpServer::findRouteCallback(const Method& method,
                                                const std::string& route) const {
     if (_routes.find(method) == _routes.end()) {
         return nullptr;
@@ -41,7 +41,7 @@ const HttpServer::OnRouteCallback* HttpServer::findRouteCallback(const HttpMetho
     return &(_routes.at(method).at(route));
 }
 
-void HttpServer::onMethod(const HttpMethod& method,
+void HttpServer::onMethod(const Method& method,
                           const std::string& route,
                           OnRouteCallback callback) {
     if (_routes.find(method) == _routes.end()) {

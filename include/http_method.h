@@ -5,7 +5,7 @@
 
 namespace http {
 
-enum class HttpMethod {
+enum class Method {
     GET,
     HEAD,
     POST,
@@ -17,17 +17,17 @@ enum class HttpMethod {
     PATCH,
 };
 
-inline std::string ConvertHttpMethodToString(const HttpMethod& method) {
+inline std::string ConvertHttpMethodToString(const Method& method) {
     switch (method) {
-        case HttpMethod::GET: return std::string("GET");
-        case HttpMethod::HEAD: return std::string("HEAD");
-        case HttpMethod::POST: return std::string("POST");
-        case HttpMethod::PUT: return std::string("PUT");
-        case HttpMethod::DELETE: return std::string("DELETE");
-        case HttpMethod::CONNECT: return std::string("CONNECT");
-        case HttpMethod::OPTIONS: return std::string("OPTIONS");
-        case HttpMethod::TRACE: return std::string("TRACE");
-        case HttpMethod::PATCH: return std::string("PATCH");
+        case Method::GET: return std::string("GET");
+        case Method::HEAD: return std::string("HEAD");
+        case Method::POST: return std::string("POST");
+        case Method::PUT: return std::string("PUT");
+        case Method::DELETE: return std::string("DELETE");
+        case Method::CONNECT: return std::string("CONNECT");
+        case Method::OPTIONS: return std::string("OPTIONS");
+        case Method::TRACE: return std::string("TRACE");
+        case Method::PATCH: return std::string("PATCH");
         default: return std::string("UNKNOWN");
     }
 }

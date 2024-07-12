@@ -34,7 +34,7 @@ class HttpRequest {
 public:
     HttpRequest(const std::string& http_version,
                 const std::string& path,
-                HttpMethod method,
+                Method method,
                 Headers headers,
                 const std::unordered_map<std::string, std::string>& query_parameters,
                 const std::string& body):
@@ -57,7 +57,7 @@ public:
         return _path;
     }
 
-    http::HttpMethod getMethod() const {
+    http::Method getMethod() const {
         return _method;
     }
 
@@ -97,7 +97,7 @@ public:
 private:
     std::string _http_version;
     std::string _path;
-    HttpMethod _method;
+    Method _method;
     Headers _headers;
     std::unordered_map<std::string, std::string> _query_parameters;
     std::string _body;

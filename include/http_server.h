@@ -29,12 +29,12 @@ class HttpServer {
 
     inline void onGet(const std::string& route,
                       OnRouteCallback callback) {
-      onMethod(HttpMethod::GET, route, callback);
+      onMethod(Method::GET, route, callback);
     }
 
     inline void onPost(const std::string& route,
                        OnRouteCallback callback) {
-      onMethod(HttpMethod::POST, route, callback);
+      onMethod(Method::POST, route, callback);
     }
 
     void start();
@@ -42,17 +42,17 @@ class HttpServer {
     ~HttpServer() = default;
 
   private:
-    const OnRouteCallback* findRouteCallback(const HttpMethod& method,
+    const OnRouteCallback* findRouteCallback(const Method& method,
                                        const std::string& route) const;
 
-    void onMethod(const HttpMethod& method,
+    void onMethod(const Method& method,
                   const std::string& route,
                   OnRouteCallback callback);
 
     uint16_t _port;
     uint8_t _max_connections;
     std::unique_ptr<__internal::TcpServer> _tcp_server;
-    std::unordered_map<HttpMethod, std::unordered_map<std::string, OnRouteCallback>> _routes;
+    std::unordered_map<Method, std::unordered_map<std::string, OnRouteCallback>> _routes;
 };
 
 }
