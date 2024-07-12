@@ -22,7 +22,7 @@ namespace http {
 
 class HttpServer {
   public:
-    typedef std::function<void(const HttpRequest& request, HttpResponse& response)> OnRouteCallback;
+    typedef std::function<void(const Request& request, HttpResponse& response)> OnRouteCallback;
 
     HttpServer(uint16_t port,
                uint8_t max_connections = kDefaultMaxConnection);

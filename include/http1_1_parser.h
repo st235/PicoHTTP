@@ -5,14 +5,14 @@
 
 namespace http {
 
-class HttpRequest;
+class Request;
 class HttpResponse;
 
 namespace __internal {
 
 class Http11Parser {
 public:
-    http::HttpRequest fromRequest(const std::string& request) const;
+    http::Request fromRequest(const std::string& request) const;
     std::string toResponse(const http::HttpResponse& response, const std::string& body) const;
 };
 

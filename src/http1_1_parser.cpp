@@ -25,7 +25,7 @@ namespace http {
 
 namespace __internal {
 
-http::HttpRequest Http11Parser::fromRequest(const std::string& request) const {
+http::Request Http11Parser::fromRequest(const std::string& request) const {
     std::vector<std::string> requst_split = Split(request, /* delimiter= */ std::string(kHttpNewLine));
 
     std::string start_line = requst_split[0];
@@ -63,7 +63,7 @@ http::HttpRequest Http11Parser::fromRequest(const std::string& request) const {
         headers_line++;
     }
 
-    return http::HttpRequest(http_version, route, http_method, headers, query_parameters, Trim(body.str()));
+    return http::Request(http_version, route, http_method, headers, query_parameters, Trim(body.str()));
 }
 
 std::string Http11Parser::toResponse(const http::HttpResponse& response, const std::string& body) const {

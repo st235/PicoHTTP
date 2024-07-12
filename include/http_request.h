@@ -30,9 +30,9 @@ std::string ConvertMapToString(const std::unordered_map<K, V>& map) {
 
 namespace http {
 
-class HttpRequest {
+class Request {
 public:
-    HttpRequest(const std::string& http_version,
+    Request(const std::string& http_version,
                 const std::string& path,
                 Method method,
                 Headers headers,
@@ -80,7 +80,7 @@ public:
     std::string toString() const {
         std::stringstream sstream;
 
-        sstream << "HttpRequest{ " << std::endl
+        sstream << "Request{ " << std::endl
                 << "version=" << _http_version << ", " << std::endl
                 << "path=" << _path << ", " << std::endl
                 << "method=" << ConvertHttpMethodToString(_method) << ", " << std::endl
@@ -92,7 +92,7 @@ public:
         return sstream.str();
     }
 
-    ~HttpRequest() = default;
+    ~Request() = default;
 
 private:
     std::string _http_version;
