@@ -38,7 +38,7 @@ http::HttpRequest Http11Parser::fromRequest(const std::string& request) const {
     http::HttpMethod http_method = ConvertStringToHttpMethod(start_line_split[0]);
     std::string http_version = start_line_split[2];
 
-    http::HttpHeaders headers;
+    http::Headers headers;
 
     size_t headers_line = 1;
     while (headers_line < requst_split.size()) {

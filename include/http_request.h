@@ -35,7 +35,7 @@ public:
     HttpRequest(const std::string& http_version,
                 const std::string& path,
                 HttpMethod method,
-                HttpHeaders headers,
+                Headers headers,
                 const std::unordered_map<std::string, std::string>& query_parameters,
                 const std::string& body):
         _http_version(http_version),
@@ -61,7 +61,7 @@ public:
         return _method;
     }
 
-    http::HttpHeaders getHeaders() const {
+    http::Headers getHeaders() const {
         return _headers;
     }
 
@@ -98,7 +98,7 @@ private:
     std::string _http_version;
     std::string _path;
     HttpMethod _method;
-    HttpHeaders _headers;
+    Headers _headers;
     std::unordered_map<std::string, std::string> _query_parameters;
     std::string _body;
 };

@@ -8,15 +8,15 @@
 
 namespace http {
 
-class HttpHeaders {
+class Headers {
 public:
-    HttpHeaders() = default;
+    Headers() = default;
 
-    HttpHeaders(const HttpHeaders& that): _headers() {
+    Headers(const Headers& that): _headers() {
         this->_headers = that._headers;
     }
 
-    HttpHeaders& operator=(const HttpHeaders& that) {
+    Headers& operator=(const Headers& that) {
         if (this != &that) {
             this->_headers.clear();
             this->_headers = that._headers;
@@ -24,11 +24,11 @@ public:
         return *this;
     }
 
-    HttpHeaders(HttpHeaders&& that) {
+    Headers(Headers&& that) {
         this->_headers = std::move(that._headers);
     }
 
-    HttpHeaders& operator=(HttpHeaders&& that) {
+    Headers& operator=(Headers&& that) {
         if (this != &that) {
             this->_headers = std::move(that._headers);
         }
@@ -63,7 +63,7 @@ public:
     std::string toString() const {
         std::stringstream sstream;
 
-        sstream << "HttpHeaders{headers=[" << std::endl;
+        sstream << "Headers{headers=[" << std::endl;
 
         for (auto i = _headers.begin(); i != _headers.end(); i++) {
             if (i != _headers.begin()) {

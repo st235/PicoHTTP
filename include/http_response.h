@@ -40,7 +40,7 @@ public:
         _headers[key] = value;
     }
 
-    const HttpHeaders& getHeaders() const {
+    const Headers& getHeaders() const {
         return _headers;
     }
 
@@ -60,7 +60,7 @@ private:
     __internal::Http11Parser _parser;
 
     HttpStatusCode _status_code;
-    HttpHeaders _headers;
+    Headers _headers;
 
 
 };
