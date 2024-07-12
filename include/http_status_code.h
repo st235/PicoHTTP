@@ -3,7 +3,7 @@
 
 namespace http {
 
-enum class HttpStatusCode {
+enum class StatusCode {
     OK,
     BAD_REQUEST,
     UNAUTHORIZED,

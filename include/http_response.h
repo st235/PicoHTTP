@@ -20,18 +20,18 @@ public:
         _connection_id(connection_id),
         _tcp_server(tcp_server),
         _parser(parser),
-        _status_code(HttpStatusCode::OK),
+        _status_code(StatusCode::OK),
         _headers() {
         // Empty on purpose.
     }
 
     // TODO: add copy and move constructors.
 
-    void setStatusCode(const HttpStatusCode& status_code) {
+    void setStatusCode(const StatusCode& status_code) {
         _status_code = status_code;
     }
 
-    const HttpStatusCode& getStatusCode() const {
+    const StatusCode& getStatusCode() const {
         return _status_code;
     }
 
@@ -59,7 +59,7 @@ private:
     __internal::TcpServer* _tcp_server;
     __internal::Http11Parser _parser;
 
-    HttpStatusCode _status_code;
+    StatusCode _status_code;
     Headers _headers;
 
 
