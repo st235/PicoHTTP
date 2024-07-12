@@ -20,15 +20,17 @@ bool ParseKeyValueStatement(const std::string& statement,
         return false;
     }
 
-    key = __http_internal::Trim(statement.substr(0, delimiter_position));
-    value = __http_internal::Trim(statement.substr(delimiter_position + 1, statement.length() - delimiter_position - 1));
+    key = http::__internal::Trim(statement.substr(0, delimiter_position));
+    value = http::__internal::Trim(statement.substr(delimiter_position + 1, statement.length() - delimiter_position - 1));
 
     return !key.empty() && !value.empty();
 }
 
 }  // namespace
 
-namespace __http_internal {
+namespace http {
+
+namespace __internal {
 
 http::HttpMethod ConvertStringToHttpMethod(const std::string& method) {
     if (method == "GET") {
@@ -106,6 +108,8 @@ bool ParseSingleHeaderLine(const std::string& header,
     return ParseKeyValueStatement(header, /* delimiter= */ ':', key, value);
 }
 
-} // namespace __http_internal
+} // namespace __internal
+
+} // namespace http
 
 #endif // __HTTP_UTILS_H__

@@ -6,7 +6,9 @@
 struct tcp_pcb;
 struct pbuf;
 
-namespace __http_internal {
+namespace http {
+
+namespace __internal {
 
 class TcpServer;
 
@@ -45,6 +47,8 @@ private:
     bool _is_closing;
 };
 
-} // namespace __http_internal
+} // namespace __internal
+
+} // namespace http
 
 #endif // __TCP_CONNECTION_H__

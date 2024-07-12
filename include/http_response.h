@@ -15,8 +15,8 @@ namespace http {
 class HttpResponse {
 public:
     HttpResponse(uint32_t connection_id,
-                 __http_internal::TcpServer* tcp_server,
-                 const __http_internal::Http11Parser& parser):
+                 __internal::TcpServer* tcp_server,
+                 const __internal::Http11Parser& parser):
         _connection_id(connection_id),
         _tcp_server(tcp_server),
         _parser(parser),
@@ -56,8 +56,8 @@ public:
 
 private:
     uint32_t _connection_id;
-    __http_internal::TcpServer* _tcp_server;
-    __http_internal::Http11Parser _parser;
+    __internal::TcpServer* _tcp_server;
+    __internal::Http11Parser _parser;
 
     HttpStatusCode _status_code;
     HttpHeaders _headers;

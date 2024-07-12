@@ -51,7 +51,7 @@ class HttpServer {
 
     uint16_t _port;
     uint8_t _max_connections;
-    std::unique_ptr<__http_internal::TcpServer> _tcp_server;
+    std::unique_ptr<__internal::TcpServer> _tcp_server;
     std::unordered_map<HttpMethod, std::unordered_map<std::string, OnRouteCallback>> _routes;
 };
 

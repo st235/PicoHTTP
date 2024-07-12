@@ -7,7 +7,9 @@
 
 #include "log.h"
 
-namespace __http_internal {
+namespace http {
+
+namespace __internal {
 
 std::vector<std::string> Split(const std::string& text, const std::string& delimiter) {
     std::vector<std::string> split;
@@ -55,6 +57,8 @@ std::string Trim(const std::string& origin) {
     return origin.substr(start_position, (end_position - start_position + 1));
 }
 
-} // namespace __http_internal
+} // namespace __internal
+
+} // namespace http
 
 #endif // __STRING_UTILS_H__

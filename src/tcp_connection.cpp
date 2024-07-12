@@ -5,7 +5,9 @@
 #include "log.h"
 #include "tcp_server.h"
 
-namespace __http_internal {
+namespace http {
+
+namespace __internal {
 
 bool TcpConnection::sink(pbuf* pbuf) {
     uint8_t* data = new uint8_t[pbuf->tot_len];
@@ -49,4 +51,6 @@ bool TcpConnection::flush() const {
     return tcp_output(_pcb) == ERR_OK;
 }
 
-} // namespace __http_internal
+} // namespace __internal
+
+} // namespace http

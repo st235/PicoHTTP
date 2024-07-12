@@ -8,9 +8,7 @@ namespace http {
 class HttpRequest;
 class HttpResponse;
 
-} // namespace http
-
-namespace __http_internal {
+namespace __internal {
 
 class Http11Parser {
 public:
@@ -18,6 +16,8 @@ public:
     std::string toResponse(const http::HttpResponse& response, const std::string& body) const;
 };
 
-} // namespace __http_internal
+} // namespace __internal
+
+} // namespace http
 
 #endif // __HTTP1_1_PARSER_H__

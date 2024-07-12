@@ -16,7 +16,7 @@ namespace http {
 HttpServer::HttpServer(uint16_t port, uint8_t max_connections):
     _port(port),
     _max_connections(max_connections),
-    _tcp_server(std::make_unique<__http_internal::TcpServer>(max_connections)),
+    _tcp_server(std::make_unique<__internal::TcpServer>(max_connections)),
     _routes() {
 
     _tcp_server->setOnConnectedCallback([](uint32_t connection_id) {
@@ -58,7 +58,7 @@ void HttpServer::start() {
         std::string payload(data, data + length);
 
         // TODO(st235): add parser interface.
-        __http_internal::Http11Parser http_parser;
+        __internal::Http11Parser http_parser;
         const auto& http_request = http_parser.fromRequest(payload);
 
         const auto* callback = this->findRouteCallback(http_request.getMethod(), http_request.getPath());

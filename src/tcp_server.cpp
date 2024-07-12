@@ -44,7 +44,7 @@ err_t on_receive_data(void* argument,
                       pbuf* pbuf,
                       err_t err) {
     cyw43_arch_lwip_check();
-    auto* connection = static_cast<__http_internal::TcpConnection*>(argument);
+    auto* connection = static_cast<http::__internal::TcpConnection*>(argument);
 
     if (!connection) {
         PLOGD("No connection found on receiving data.");
@@ -91,7 +91,7 @@ err_t on_poll(void* argument,
               tcp_pcb* pcb) {
     cyw43_arch_lwip_check();
 
-    auto* connection = static_cast<__http_internal::TcpConnection*>(argument);
+    auto* connection = static_cast<http::__internal::TcpConnection*>(argument);
 
     if (!connection) {
         PLOGD("Argument was null");
@@ -131,7 +131,7 @@ err_t on_sent(void* argument,
              u16_t len) {
     cyw43_arch_lwip_check();
 
-    auto* connection = static_cast<__http_internal::TcpConnection*>(argument);
+    auto* connection = static_cast<http::__internal::TcpConnection*>(argument);
 
     if (!connection) {
         PLOGD("Argument was null");
@@ -174,7 +174,7 @@ void on_error(void* argument,
         PLOGD("TCP Connection failed with %d\n", error);
     }
 
-    auto* connection = static_cast<__http_internal::TcpConnection*>(argument);
+    auto* connection = static_cast<http::__internal::TcpConnection*>(argument);
     if (connection) {
         PLOGD("Marking connection as closed, from on_error.");
         connection->close();
@@ -206,7 +206,7 @@ err_t on_accept_connection(void* argument,
         return ERR_ABRT;
     }
 
-    auto* server = static_cast<__http_internal::TcpServer*>(argument);
+    auto* server = static_cast<http::__internal::TcpServer*>(argument);
     auto* connection = server->createConnection(new_pcb);
 
     if (!connection) {
@@ -229,7 +229,9 @@ err_t on_accept_connection(void* argument,
 
 } // namespace
 
-namespace __http_internal {
+namespace http {
+
+namespace __internal {
 
 bool TcpServer::listen(uint16_t port) {
     bool is_listening = _listen_pcb != nullptr;
@@ -318,4 +320,6 @@ void TcpServer::onConnectionClosed(TcpConnection* connection) {
     }
 }
 
-} // _http_internal
+} // namespace __internal
+
+} // namespace http

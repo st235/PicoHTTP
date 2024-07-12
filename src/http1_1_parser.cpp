@@ -21,7 +21,9 @@ constexpr char kHttpWordsDelimiter = ' ';
 
 } // namespace
 
-namespace __http_internal {
+namespace http {
+
+namespace __internal {
 
 http::HttpRequest Http11Parser::fromRequest(const std::string& request) const {
     std::vector<std::string> requst_split = Split(request, /* delimiter= */ std::string(kHttpNewLine));
@@ -84,4 +86,6 @@ std::string Http11Parser::toResponse(const http::HttpResponse& response, const s
     return sstream.str();
 }
 
-} // namespace __http_internal
+} // namespace __internal
+
+} // namespace http
