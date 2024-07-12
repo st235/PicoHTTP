@@ -66,7 +66,7 @@ http::Request Http11Parser::fromRequest(const std::string& request) const {
     return http::Request(http_version, route, http_method, headers, query_parameters, Trim(body.str()));
 }
 
-std::string Http11Parser::toResponse(const http::HttpResponse& response, const std::string& body) const {
+std::string Http11Parser::toResponse(const http::Response& response, const std::string& body) const {
     std::stringstream sstream;
 
     // Main line: HTTP/1.1 403 Forbidden

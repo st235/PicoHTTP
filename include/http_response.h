@@ -12,9 +12,9 @@
 
 namespace http {
 
-class HttpResponse {
+class Response {
 public:
-    HttpResponse(uint32_t connection_id,
+    Response(uint32_t connection_id,
                  __internal::TcpServer* tcp_server,
                  const __internal::Http11Parser& parser):
         _connection_id(connection_id),
@@ -52,7 +52,7 @@ public:
         _tcp_server->close(_connection_id);
     }
 
-    ~HttpResponse() = default;
+    ~Response() = default;
 
 private:
     uint32_t _connection_id;
