@@ -1,14 +1,17 @@
 cmake_minimum_required(VERSION 3.13)
+
+set(CMAKE_CXX_STANDARD 17)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
+
 set(PICO_BOARD pico_w)
 
 # Initialise PicoSDK as submodule.
-include(${CMAKE_CURRENT_BINARY_DIR}/../../../pico-sdk/pico_sdk_init.cmake)
+include(${CMAKE_CURRENT_BINARY_DIR}/../../pico-sdk/pico_sdk_init.cmake)
+pico_sdk_init()
 
-add_subdirectory(.. ${CMAKE_CURRENT_BINARY_DIR}/pico-http)
+add_subdirectory(../.. ${CMAKE_CURRENT_BINARY_DIR}/pico-http)
 
 project(http_server)
-
-pico_sdk_init()
 
 if((NOT WIFI_SSID) OR (NOT WIFI_PASSWORD))
     message(FATAL_ERROR "WIFI_SSID or WIFI_PASSWORD are not set")
