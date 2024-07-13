@@ -55,13 +55,13 @@ void Server::start() {
     _tcp_server.setOnDataReceivedCallback([=](uint32_t connection_id, uint8_t* data, uint16_t length) {
         std::string payload(data, data + length);
 
-        // TODO(st235): add parser interface.
+        // TODO(st235): join different parsers together.
         __internal::Http11Parser http_parser;
         const auto& http_request = http_parser.fromRequest(payload);
 
         const auto* callback = this->findRouteCallback(http_request.getMethod(), http_request.getPath());
 
-        Response response(connection_id, _tcp_server, http_parser);
+        Response response(connection_id, *this);
 
         if (!callback) {
             response.send("");
@@ -74,6 +74,19 @@ void Server::start() {
 
 
     _tcp_server.listen(_port);
+}
+
+void Server::send(const Response& response,
+                  const std::string& body) const {
+    // TODO(st235): add parser interface.
+    __internal::Http11Parser http_parser;
+
+    auto connection_id = response.getConnectionId();
+    std::string parsed_response = http_parser.toResponse(response, body);
+    const char* raw_response = parsed_response.c_str();
+
+    _tcp_server.write(connection_id, raw_response, strlen(raw_response));
+    _tcp_server.close(connection_id);
 }
 
 }

@@ -18,6 +18,7 @@ target_sources(pico_http INTERFACE
   src/string_utils.h
   src/tcp_server.cpp
   src/tcp_connection.cpp
+  src/http_response.cpp
 )
 target_include_directories(pico_http INTERFACE ${CMAKE_CURRENT_LIST_DIR}/include)
 
