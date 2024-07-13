@@ -26,3 +26,34 @@ target_link_libraries(pico_http INTERFACE
   pico_cyw43_arch_lwip_threadsafe_background
   pico_stdlib
 )
+
+# Test targets.
+
+include(FetchContent)
+
+FetchContent_Declare(
+  googletest
+  URL https://github.com/google/googletest/archive/03597a01ee50ed33e9dfd640b249b4be3799d395.zip
+)
+
+# For Windows: Prevent overriding the parent project's compiler/linker settings.
+set(gtest_force_shared_crt ON CACHE BOOL "" FORCE)
+FetchContent_MakeAvailable(googletest)
+
+enable_testing()
+
+add_executable(pico_http_tests
+  tests/http_parser_tests.cpp
+)
+
+# GMock is required to use EXPECT_THAT.
+target_link_libraries(pico_http_tests PRIVATE GTest::gtest_main GTest::gmock_main)
+
+# Hacky way to add only classes
+# that do not depend on Pico SDK.
+target_sources(pico_http_tests PRIVATE
+  src/string_utils.h
+)
+
+include(GoogleTest)
+gtest_discover_tests(pico_http_tests)

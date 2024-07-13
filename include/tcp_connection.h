@@ -2,6 +2,7 @@
 #define __TCP_CONNECTION_H__
 
 #include <cstdint>
+#include <cstddef>
 
 struct tcp_pcb;
 struct pbuf;
@@ -20,8 +21,8 @@ public:
         // Empty on purpose.
     }
 
-    inline uint32_t id() const {
-        return reinterpret_cast<uint32_t>(this);
+    inline size_t id() const {
+        return reinterpret_cast<size_t>(this);
     }
 
     inline tcp_pcb& getPcb() const { return _pcb; }
