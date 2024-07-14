@@ -5,21 +5,19 @@
 #include <cstring>
 #include <string>
 
-#include "tcp_server.h"
-#include "http1_1_parser.h"
 #include "http_status_code.h"
 #include "http_headers.h"
 
 namespace http {
 
+class Server;
+
 class Response {
 public:
     Response(uint32_t connection_id,
-            const tcp::Server& tcp_server,
-            const __internal::Http11Parser& parser):
+            const Server& server):
         _connection_id(connection_id),
-        _tcp_server(tcp_server),
-        _parser(parser),
+        _server(server),
         _status_code(StatusCode::kOk),
         _headers() {
         // Empty on purpose.
@@ -42,32 +40,31 @@ public:
         return _headers;
     }
 
-    void send(const std::string& body) const {
-        std::string response = _parser.toResponse(*this, body);
-        const char* raw_response = response.c_str();
-
-        _tcp_server.write(_connection_id, raw_response, strlen(raw_response));
-        _tcp_server.close(_connection_id);
-    }
+    void send(const std::string& body) const;
 
     ~Response() = default;
 
 private:
+    friend class Server;
+
+    uint32_t _connection_id;
+
+    // Response always lives no longer
+    // than the server associated
+    // with it.
+    const Server& _server;
+
+    StatusCode _status_code;
+    Headers _headers;
+
     Response(const Response& that) = delete;
     Response& operator=(const Response& that) = delete;
     Response(Response&& that) = delete;
     Response& operator=(Response&& that) = delete;
 
-    uint32_t _connection_id;
-
-    // Response always lives no longer
-    // than the server and the parser associated
-    // with it.
-    const tcp::Server& _tcp_server;
-    const __internal::Http11Parser& _parser;
-
-    StatusCode _status_code;
-    Headers _headers;
+    inline uint32_t getConnectionId() const {
+        return _connection_id;
+    }
 };
 
 } // namespace http

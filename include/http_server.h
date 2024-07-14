@@ -42,6 +42,8 @@ class Server {
     ~Server() = default;
 
   private:
+    friend class Response;
+
     uint16_t _port;
     uint8_t _max_connections;
     tcp::Server _tcp_server;
@@ -58,6 +60,9 @@ class Server {
     void onMethod(const Method& method,
                   const std::string& route,
                   OnRouteCallback callback);
+
+    void send(const Response& response,
+              const std::string& body) const;
 };
 
 }
