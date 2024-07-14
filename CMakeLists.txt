@@ -13,7 +13,7 @@ target_sources(pico_http INTERFACE
   src/http_server.cpp
   src/http_utils.h
   src/http_version.h
-  src/http1_1_parser.cpp
+  src/http_coder.cpp
   src/log.h
   src/string_utils.h
   src/tcp_server.cpp
@@ -28,33 +28,38 @@ target_link_libraries(pico_http INTERFACE
   pico_stdlib
 )
 
-# Test targets.
+# Test targets, disabled by default.
+option(COMPILE_TESTS "Compiled with tests when turned on." OFF)
 
-include(FetchContent)
+if (COMPILE_TESTS)
+  message("Tests compilation enabled.")
 
-FetchContent_Declare(
-  googletest
-  URL https://github.com/google/googletest/archive/03597a01ee50ed33e9dfd640b249b4be3799d395.zip
-)
+  include(FetchContent)
 
-# For Windows: Prevent overriding the parent project's compiler/linker settings.
-set(gtest_force_shared_crt ON CACHE BOOL "" FORCE)
-FetchContent_MakeAvailable(googletest)
+  FetchContent_Declare(
+    googletest
+    URL https://github.com/google/googletest/archive/03597a01ee50ed33e9dfd640b249b4be3799d395.zip
+  )
 
-enable_testing()
+  # For Windows: Prevent overriding the parent project's compiler/linker settings.
+  set(gtest_force_shared_crt ON CACHE BOOL "" FORCE)
+  FetchContent_MakeAvailable(googletest)
 
-add_executable(pico_http_tests
-  tests/http_parser_tests.cpp
-)
+  enable_testing()
 
-# GMock is required to use EXPECT_THAT.
-target_link_libraries(pico_http_tests PRIVATE GTest::gtest_main GTest::gmock_main)
+  add_executable(pico_http_tests
+    tests/http_parser_tests.cpp
+  )
 
-# Hacky way to add only classes
-# that do not depend on Pico SDK.
-target_sources(pico_http_tests PRIVATE
-  src/string_utils.h
-)
+  # GMock is required to use EXPECT_THAT.
+  target_link_libraries(pico_http_tests PRIVATE GTest::gtest_main GTest::gmock_main)
 
-include(GoogleTest)
-gtest_discover_tests(pico_http_tests)
+  # Hacky way to add only classes
+  # that do not depend on Pico SDK.
+  target_sources(pico_http_tests PRIVATE
+    src/string_utils.h
+  )
+
+  include(GoogleTest)
+  gtest_discover_tests(pico_http_tests)
+endif()

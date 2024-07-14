@@ -5,6 +5,7 @@
 #include <cstring>
 #include <string>
 
+#include "http_protocol_version.h"
 #include "http_status_code.h"
 #include "http_headers.h"
 
@@ -15,20 +16,17 @@ class Server;
 class Response {
 public:
     Response(uint32_t connection_id,
-            const Server& server):
+             const ProtocolVersion& protocol_version,
+             const Server& server):
         _connection_id(connection_id),
+        _protocol_version(protocol_version),
         _server(server),
-        _status_code(StatusCode::kOk),
         _headers() {
         // Empty on purpose.
     }
 
-    void setStatusCode(const StatusCode& status_code) {
-        _status_code = status_code;
-    }
-
-    const StatusCode& getStatusCode() const {
-        return _status_code;
+    const ProtocolVersion& getProtocolVersion() const {
+        return _protocol_version;
     }
 
     void addHeader(const std::string& key,
@@ -40,7 +38,8 @@ public:
         return _headers;
     }
 
-    void send(const std::string& body) const;
+    void send(const std::string& body,
+              const StatusCode& status_code = StatusCode::kOk) const;
 
     ~Response() = default;
 
@@ -48,13 +47,11 @@ private:
     friend class Server;
 
     uint32_t _connection_id;
-
+    const ProtocolVersion& _protocol_version;
     // Response always lives no longer
     // than the server associated
     // with it.
     const Server& _server;
-
-    StatusCode _status_code;
     Headers _headers;
 
     Response(const Response& that) = delete;

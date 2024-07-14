@@ -5,6 +5,7 @@
 #include <unordered_map>
 
 #include "http_method.h"
+#include "http_protocol_version.h"
 #include "http_status_code.h"
 #include "string_utils.h"
 
@@ -31,6 +32,19 @@ bool ParseKeyValueStatement(const std::string& statement,
 namespace http {
 
 namespace __internal {
+
+// Protocol version.
+ProtocolVersion AsProtocolVersion(const std::string& version) {
+    // TODO(st235): add mapping to the protocol version.
+    return ProtocolVersion::kHttp1_1;
+}
+
+std::string ConvertProtocolVersionToString(const ProtocolVersion& version) {
+    switch(version) {
+        case ProtocolVersion::kHttp1_1: return "HTTP/1.1";
+        default: return "UNKNOWN";
+    }
+}
 
 http::Method ConvertStringToHttpMethod(const std::string& method) {
     if (method == "GET") {

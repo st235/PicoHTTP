@@ -1,11 +1,12 @@
 #ifndef __HTTP_REQUEST_H__
 #define __HTTP_REQUEST_H__
 
-#include <string>
 #include <sstream>
+#include <string>
 
-#include "http_method.h"
 #include "http_headers.h"
+#include "http_method.h"
+#include "http_protocol_version.h"
 
 namespace {
 
@@ -32,13 +33,13 @@ namespace http {
 
 class Request {
 public:
-    Request(const std::string& http_version,
+    Request(const ProtocolVersion& protocol_version,
             const std::string& path,
             const Method& method,
             const Headers& headers,
             const std::unordered_map<std::string, std::string>& query_parameters,
             const std::string& body):
-        _http_version(http_version),
+        _protocol_version(protocol_version),
         _path(path),
         _method(method),
         _headers(headers),
@@ -48,7 +49,7 @@ public:
     }
 
     Request(const Request& that):
-        _http_version(that._http_version),
+        _protocol_version(that._protocol_version),
         _path(that._path),
         _method(that._method),
         _headers(that._headers),
@@ -59,7 +60,7 @@ public:
 
     Request& operator=(const Request& that) {
         if (this != &that) {
-            _http_version = that._http_version;
+            _protocol_version = that._protocol_version;
             _path = that._path;
             _method = that._method;
             _headers = that._headers;
@@ -70,7 +71,7 @@ public:
     }
 
     Request(Request&& that):
-        _http_version(std::move(that._http_version)),
+        _protocol_version(std::move(that._protocol_version)),
         _path(std::move(that._path)),
         _method(std::move(that._method)),
         _headers(std::move(that._headers)),
@@ -81,7 +82,7 @@ public:
 
     Request& operator=(Request&& that) {
         if (this != &that) {
-            _http_version = std::move(that._http_version);
+            _protocol_version = std::move(that._protocol_version);
             _path = std::move(that._path);
             _method = std::move(that._method);
             _headers = std::move(that._headers);
@@ -91,8 +92,8 @@ public:
         return *this;
     }
 
-    const std::string& getHttpVersion() const {
-        return _http_version;
+    const ProtocolVersion& getProtocolVersion() const {
+        return _protocol_version;
     }
 
     const std::string& getPath() const {
@@ -123,7 +124,7 @@ public:
         std::stringstream sstream;
 
         sstream << "Request{ " << std::endl
-                << "version=" << _http_version << ", " << std::endl
+                // << "version=" << _protocol_version << ", " << std::endl
                 << "path=" << _path << ", " << std::endl
                 << "method=" << ConvertHttpMethodToString(_method) << ", " << std::endl
                 << "headers=" << _headers.toString() << ", " << std::endl
@@ -137,7 +138,7 @@ public:
     ~Request() = default;
 
 private:
-    std::string _http_version;
+    ProtocolVersion _protocol_version;
     std::string _path;
     Method _method;
     Headers _headers;

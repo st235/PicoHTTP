@@ -1,21 +1,21 @@
 #include "http_server.h"
 
-#include <stdio.h>
 #include <cstdint>
-#include <memory>
-#include <string>
 #include <cstring>
+#include <memory>
+#include <stdio.h>
+#include <string>
 
-#include "log.h"
-#include "http_status_code.h"
 #include "http_headers.h"
-#include "http1_1_parser.h"
+#include "http_status_code.h"
+#include "log.h"
 
 namespace http {
 
 Server::Server(uint16_t port, uint8_t max_connections):
     _port(port),
     _max_connections(max_connections),
+    _coder(),
     _tcp_server(max_connections),
     _routes() {
 
@@ -55,18 +55,17 @@ void Server::start() {
     _tcp_server.setOnDataReceivedCallback([=](uint32_t connection_id, uint8_t* data, uint16_t length) {
         std::string payload(data, data + length);
 
-        // TODO(st235): join different parsers together.
-        __internal::Http11Parser http_parser;
-        const auto& http_request = http_parser.fromRequest(payload);
+        // TODO(st235): handle no value parsed.
+        const auto& request = _coder.decode(payload).value();
 
-        const auto* callback = this->findRouteCallback(http_request.getMethod(), http_request.getPath());
+        const auto* callback = this->findRouteCallback(request.getMethod(), request.getPath());
 
-        Response response(connection_id, *this);
+        Response response(connection_id, request.getProtocolVersion(), *this);
 
         if (!callback) {
             response.send("");
         } else {
-            (*callback)(http_request, response);
+            (*callback)(request, response);
         }
 
         return true;
@@ -77,14 +76,13 @@ void Server::start() {
 }
 
 void Server::send(const Response& response,
-                  const std::string& body) const {
-    // TODO(st235): add parser interface.
-    __internal::Http11Parser http_parser;
-
-    auto connection_id = response.getConnectionId();
-    std::string parsed_response = http_parser.toResponse(response, body);
+                  const std::string& body,
+                  const StatusCode& status_code) const {
+    std::string parsed_response = _coder.encode(response.getProtocolVersion(), status_code,
+        response.getHeaders(), body);
     const char* raw_response = parsed_response.c_str();
 
+    auto connection_id = response.getConnectionId();
     _tcp_server.write(connection_id, raw_response, strlen(raw_response));
     _tcp_server.close(connection_id);
 }

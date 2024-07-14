@@ -5,8 +5,6 @@
 #include <string>
 #include <vector>
 
-#include "log.h"
-
 namespace http {
 
 namespace __internal {
