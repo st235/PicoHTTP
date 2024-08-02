@@ -7,8 +7,11 @@ set(PICO_BOARD pico_w)
 
 project(pico_http VERSION 0.1.0 DESCRIPTION "Lightweight http protocol implementation.")
 
+include(FetchContent)
+
 add_library(pico_http INTERFACE)
 
+target_include_directories(pico_http INTERFACE ${CMAKE_CURRENT_LIST_DIR}/include)
 target_sources(pico_http INTERFACE
   src/http_server.cpp
   src/http_utils.h
@@ -19,22 +22,32 @@ target_sources(pico_http INTERFACE
   src/tcp_server.cpp
   src/tcp_connection.cpp
   src/http_response.cpp
+
+  # Request-related classes.
+  src/request/http_request_target.cpp
 )
-target_include_directories(pico_http INTERFACE ${CMAKE_CURRENT_LIST_DIR}/include)
+
+# Fetch URI parser.
+FetchContent_Declare(
+  URIC
+  GIT_REPOSITORY git@github.com:st235/URIC.git
+  GIT_TAG "main"
+  GIT_SHALLOW TRUE
+  GIT_PROGRESS ON
+)
+FetchContent_MakeAvailable(URIC)
 
 # Bring pico sdk dependencies.
 target_link_libraries(pico_http INTERFACE
+  uric
   pico_cyw43_arch_lwip_threadsafe_background
   pico_stdlib
 )
 
 # Test targets, disabled by default.
 option(COMPILE_TESTS "Compiled with tests when turned on." OFF)
-
 if (COMPILE_TESTS)
   message("Tests compilation enabled.")
-
-  include(FetchContent)
 
   FetchContent_Declare(
     googletest
@@ -48,7 +61,9 @@ if (COMPILE_TESTS)
   enable_testing()
 
   add_executable(pico_http_tests
+    tests/url_tests.cpp
     tests/http_parser_tests.cpp
+    tests/string_utils_tests.cpp
   )
 
   # GMock is required to use EXPECT_THAT.
@@ -57,6 +72,7 @@ if (COMPILE_TESTS)
   # Hacky way to add only classes
   # that do not depend on Pico SDK.
   target_sources(pico_http_tests PRIVATE
+    include/url.h
     src/string_utils.h
   )
 

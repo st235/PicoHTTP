@@ -56,7 +56,8 @@ void Server::start() {
         std::string payload(data, data + length);
 
         // TODO(st235): handle no value parsed.
-        const auto& request = _coder.decode(payload).value();
+        const auto& request_opt = _coder.decode(payload);
+        const auto& request = request_opt.value();
 
         const auto* callback = this->findRouteCallback(request.getMethod(), request.getPath());
 

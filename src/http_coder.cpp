@@ -1,15 +1,19 @@
 #include "http_coder.h"
 
 #include <sstream>
+#include <iostream>
 #include <vector>
 #include <unordered_map>
 
-#include "http_protocol_version.h"
-#include "http_method.h"
+#include "url.h"
+
 #include "http_headers.h"
+#include "http_method.h"
+#include "http_protocol_version.h"
 #include "http_request.h"
 #include "http_utils.h"
 #include "string_utils.h"
+#include "request/http_request_target.h"
 
 namespace {
 
@@ -25,16 +29,22 @@ namespace http {
 namespace __internal {
 
 std::optional<Request> Coder::decode(const std::string& request) const {
-    std::vector<std::string> requst_split = Split(request, /* delimiter= */ std::string(kHttpNewLine));
+    std::vector<std::string> requst_split =
+        Split(request, /* delimiter= */ std::string(kHttpNewLine));
 
     std::string start_line = requst_split[0];
-    std::vector<std::string> start_line_split = Split(start_line, /* delimiter= */ std::string(" "));
+    std::vector<std::string> start_line_split =
+        Split(start_line, /* delimiter= */ std::string(" "));
 
-    std::string raw_route = start_line_split[1];
-    std::string route = GetRoute(raw_route);
-    std::unordered_map<std::string, std::string> query_parameters = ParseQueryParameters(raw_route);
+    // TODO(st235): check for method here.
+    http::Method method = ConvertStringToHttpMethod(start_line_split[0]);
 
-    http::Method http_method = ConvertStringToHttpMethod(start_line_split[0]);
+    std::string raw_request_target = start_line_split[1];
+    std::optional<RequestTarget> opt_request_target = GetRequestTarget(method, raw_request_target);
+    if (!opt_request_target) {
+        return std::nullopt;
+    }
+
     // TODO(st235): Create mapper for protocol version.
     std::string http_version = start_line_split[2];
 
@@ -63,7 +73,7 @@ std::optional<Request> Coder::decode(const std::string& request) const {
         headers_line++;
     }
 
-    return std::optional { Request(ProtocolVersion::kHttp1_1, route, http_method, headers, query_parameters, Trim(body.str())) };
+    return std::make_optional(Request(ProtocolVersion::kHttp1_1, opt_request_target.value(), method, headers, Trim(body.str())));
 }
 
 std::string Coder::encode(const ProtocolVersion& protocol_version,
