@@ -8,14 +8,6 @@
 #include "http_method.h"
 #include "url.h"
 
-// Forward declaration of the content types.
-namespace uri {
-
-class Url;
-class Authority;
-
-} // namespace uri
-
 namespace http {
 
 namespace __internal {
