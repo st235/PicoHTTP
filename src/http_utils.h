@@ -5,8 +5,11 @@
 #include <unordered_map>
 
 #include "http_method.h"
+#include "http_protocol_version.h"
 #include "http_status_code.h"
 #include "string_utils.h"
+
+#include "uri.h"
 
 namespace {
 
@@ -31,6 +34,19 @@ bool ParseKeyValueStatement(const std::string& statement,
 namespace http {
 
 namespace __internal {
+
+// Protocol version.
+ProtocolVersion AsProtocolVersion(const std::string& version) {
+    // TODO(st235): add mapping to the protocol version.
+    return ProtocolVersion::kHttp1_1;
+}
+
+std::string ConvertProtocolVersionToString(const ProtocolVersion& version) {
+    switch(version) {
+        case ProtocolVersion::kHttp1_1: return "HTTP/1.1";
+        default: return "UNKNOWN";
+    }
+}
 
 http::Method ConvertStringToHttpMethod(const std::string& method) {
     if (method == "GET") {
@@ -68,39 +84,6 @@ std::string GetHttpStatusCodeDescription(const http::StatusCode& status_code) {
         // TODO(st235): add all conversions.
         default: return std::string("418 I'm a teapot");
     }
-}
-
-std::string GetRoute(const std::string& path) {
-    size_t delimiter_position = path.find('?');
-
-    if (delimiter_position == std::string::npos) {
-        return path;
-    }
-
-    return path.substr(0, delimiter_position);
-}
-
-std::unordered_map<std::string, std::string> ParseQueryParameters(const std::string& path) {
-    size_t delimiter_position = path.find('?');
-
-    if (delimiter_position == std::string::npos) {
-        return std::unordered_map<std::string, std::string>();
-    }
-
-    std::unordered_map<std::string, std::string> result;
-    std::string query_params = path.substr(delimiter_position + 1, path.length() - delimiter_position - 1);
-    std::vector<std::string> query_splits = Split(query_params, /* delimiter= */ "&");
-
-    for (const auto& query: query_splits) {
-        std::string key;
-        std::string value;
-
-        if (ParseKeyValueStatement(query, /* delimiter= */ '=', key, value)) {
-            result[key] = value;
-        }
-    }
-
-    return result;
 }
 
 bool ParseSingleHeaderLine(const std::string& header,

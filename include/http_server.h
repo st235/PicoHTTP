@@ -7,10 +7,11 @@
 #include <string>
 #include <unordered_map>
 
-#include "tcp_server.h"
+#include "http_coder.h"
 #include "http_method.h"
 #include "http_request.h"
 #include "http_response.h"
+#include "tcp_server.h"
 
 namespace {
 
@@ -46,6 +47,7 @@ class Server {
 
     uint16_t _port;
     uint8_t _max_connections;
+    __internal::Coder _coder;
     tcp::Server _tcp_server;
     std::unordered_map<Method, std::unordered_map<std::string, OnRouteCallback>> _routes;
 
@@ -55,14 +57,15 @@ class Server {
     Server& operator=(Server&& that) = delete;
 
     const OnRouteCallback* findRouteCallback(const Method& method,
-                                       const std::string& route) const;
+                                             const std::string& route) const;
 
     void onMethod(const Method& method,
                   const std::string& route,
                   OnRouteCallback callback);
 
     void send(const Response& response,
-              const std::string& body) const;
+              const std::string& body,
+              const StatusCode& status_code) const;
 };
 
 }

@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.13)
+cmake_minimum_required(VERSION 3.26)
 
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
@@ -6,12 +6,14 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(PICO_BOARD pico_w)
 
 # Initialise PicoSDK as submodule.
+#  It is necessary to include the pico sdk cmake before defining the project in CMake.
 include(${CMAKE_CURRENT_BINARY_DIR}/../../pico-sdk/pico_sdk_init.cmake)
+
+project(http_server LANGUAGES CXX C ASM VERSION 1.0.0 DESCRIPTION "HTTP Server sample app.")
+
 pico_sdk_init()
 
 add_subdirectory(../.. ${CMAKE_CURRENT_BINARY_DIR}/pico-http)
-
-project(http_server)
 
 if((NOT WIFI_SSID) OR (NOT WIFI_PASSWORD))
     message(FATAL_ERROR "WIFI_SSID or WIFI_PASSWORD are not set")

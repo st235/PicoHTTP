@@ -4,8 +4,9 @@
 
 namespace http {
 
-void Response::send(const std::string& body) const {
-    _server.send(*this, body);
+void Response::send(const std::string& body,
+                    const StatusCode& status_code) const {
+    _server.send(*this, body, status_code);
 }
 
 } // namespace http
