@@ -22,9 +22,6 @@ target_sources(pico_http INTERFACE
   src/tcp_server.cpp
   src/tcp_connection.cpp
   src/http_response.cpp
-
-  # Request-related classes.
-  src/request/http_request_target.cpp
 )
 
 # Fetch URI parser.
